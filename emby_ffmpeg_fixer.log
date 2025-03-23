@@ -1,0 +1,19 @@
+2025-03-18 14:28:10,241 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://173.13.191.241:5000
+2025-03-18 14:28:10,241 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-03-18 14:31:09,894 - EmbyFFMPEGFixer - INFO - [Initialization] [Complete] Application started
+2025-03-18 14:31:09,907 - werkzeug - INFO - 127.0.0.1 - - [18/Mar/2025 14:31:09] "GET / HTTP/1.1" 200 -
+2025-03-18 14:31:09,975 - werkzeug - INFO - 127.0.0.1 - - [18/Mar/2025 14:31:09] "GET /static/css/style.css HTTP/1.1" 200 -
+2025-03-18 14:31:10,079 - werkzeug - INFO - 127.0.0.1 - - [18/Mar/2025 14:31:10] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2025-03-18 14:48:59,897 - EmbyFFMPEGFixer - INFO - [Initialization] [Complete] Application started
+2025-03-18 14:48:59,898 - werkzeug - INFO - 34.193.163.52 - - [18/Mar/2025 14:48:59] "GET / HTTP/1.1" 200 -
+2025-03-18 14:49:59,073 - EmbyFFMPEGFixer - INFO - [Initialization] [Complete] Application started
+2025-03-18 14:49:59,075 - werkzeug - INFO - 198.235.24.237 - - [18/Mar/2025 14:49:59] "GET / HTTP/1.1" 200 -
+2025-03-18 15:08:42,729 - EmbyFFMPEGFixer - INFO - [Initialization] [Complete] Application started
+2025-03-18 15:08:42,730 - werkzeug - INFO - 127.0.0.1 - - [18/Mar/2025 15:08:42] "GET / HTTP/1.1" 200 -
+2025-03-18 15:08:42,766 - werkzeug - INFO - 127.0.0.1 - - [18/Mar/2025 15:08:42] "GET /static/css/style.css HTTP/1.1" 200 -
+2025-03-23 15:00:23,882 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5001
+2025-03-23 15:00:23,882 - INFO - [33mPress CTRL+C to quit[0m

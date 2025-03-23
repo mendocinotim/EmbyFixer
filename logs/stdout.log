@@ -1,0 +1,512 @@
+ * Serving Flask app 'app'
+ * Debug mode: off
+Info Main: Application path: /Applications/EmbyServer.app/Contents/MacOS/EmbyServer.dll
+Info App: Setting default culture to en-US
+Info Main: Emby Server 4.9.0.42
+	Command line: /Applications/EmbyServer.app/Contents/MacOS/EmbyServer.dll
+	Operating system: Darwin 19.6.0 Darwin Kernel Version 19.6.0: Tue Jun 21 21:18:39 PDT 2022; root:xnu-6153.141.66~1/RELEASE_X86_64
+	OS/Process: x64/x64
+	Framework: .NET 6.0.36
+	Runtime: Applications/EmbyServer.app/Contents/MacOS/System.Private.CoreLib.dll
+	Processor count: 8
+	Data path: /Users/w3/.config/emby-server
+	Application path: /Applications/EmbyServer.app/Contents/MacOS
+Info Main: Logs path: /Users/w3/.config/emby-server/logs
+Info Main: Cache path: /Volumes/Drobo/Emby cache/cache
+Info Main: Internal metadata path: /Users/w3/.config/emby-server/metadata
+Info Main: DefaultThreadCurrentCulture: en-US
+Info Main: DefaultThreadCurrentUICulture: en-US
+Info Main: DefaultThreadCurrentUICulture: en-US
+Info Main: Server Friendly Name: ‌Tim's iMac‌
+Info Main: Local time: 3/21/2025 1:11:40 PM -07:00
+Info Main: Tray icon path: /Applications/EmbyServer.app/Contents/MacOS/embytray
+Info App: Emby Server Version: 4.9.0.42
+Info App: Loading assemblies
+Info App: File /Users/w3/.config/emby-server/plugins/OpenSubtitles.dll has version 1.0.63.0
+Info App: File /Applications/EmbyServer.app/Contents/Resources/plugins/OpenSubtitles.dll has version 1.0.63.0
+Info App: File /Users/w3/.config/emby-server/plugins/EmbyGuideData.dll has version 1.0.18.0
+Info App: File /Applications/EmbyServer.app/Contents/Resources/plugins/EmbyGuideData.dll has version 1.0.18.0
+Info App: File /Users/w3/.config/emby-server/plugins/NfoMetadata.dll has version 1.0.82.0
+Info App: File /Applications/EmbyServer.app/Contents/Resources/plugins/NfoMetadata.dll has version 1.0.82.0
+Info App: File /Users/w3/.config/emby-server/plugins/MovieDb.dll has version 1.8.3.0
+Info App: File /Applications/EmbyServer.app/Contents/Resources/plugins/MovieDb.dll has version 1.8.0.0
+Info App: File /Users/w3/.config/emby-server/plugins/Emby.Webhooks.dll has version 1.0.35.0
+Info App: File /Applications/EmbyServer.app/Contents/Resources/plugins/Emby.Webhooks.dll has version 1.0.35.0
+Info App: File /Users/w3/.config/emby-server/plugins/Emby.PortMapper.dll has version 1.2.8.0
+Info App: File /Applications/EmbyServer.app/Contents/Resources/plugins/Emby.PortMapper.dll has version 1.2.8.0
+Info App: File /Users/w3/.config/emby-server/plugins/BlurayMounter.dll has version 1.0.2.0
+Info App: File /Applications/EmbyServer.app/Contents/Resources/plugins/BlurayMounter.dll has version 1.0.2.0
+Info App: File /Users/w3/.config/emby-server/plugins/Tvdb.dll has version 1.6.1.0
+Info App: File /Applications/EmbyServer.app/Contents/Resources/plugins/Tvdb.dll has version 1.5.8.0
+Info App: File /Users/w3/.config/emby-server/plugins/StudioImages.dll has version 1.0.3.0
+Info App: File /Applications/EmbyServer.app/Contents/Resources/plugins/StudioImages.dll has version 1.0.3.0
+Info App: File /Users/w3/.config/emby-server/plugins/MBBackup.dll has version 1.7.2.0
+Info App: File /Applications/EmbyServer.app/Contents/Resources/plugins/MBBackup.dll has version 1.7.2.0
+Info App: File /Users/w3/.config/emby-server/plugins/Emby.XmlTV.dll has version 1.2.0.0
+Info App: File /Applications/EmbyServer.app/Contents/Resources/plugins/Emby.XmlTV.dll has version 1.2.0.0
+Info App: File /Users/w3/.config/emby-server/plugins/Emby.Dlna.dll has version 1.4.7.0
+Info App: File /Applications/EmbyServer.app/Contents/Resources/plugins/Emby.Dlna.dll has version 1.4.7.0
+Info App: File /Users/w3/.config/emby-server/plugins/Fanart.dll has version 1.0.16.0
+Info App: File /Applications/EmbyServer.app/Contents/Resources/plugins/Fanart.dll has version 1.0.16.0
+Info App: File /Users/w3/.config/emby-server/plugins/MusicBrainz.dll has version 1.0.25.0
+Info App: File /Applications/EmbyServer.app/Contents/Resources/plugins/MusicBrainz.dll has version 1.0.24.0
+Info App: File /Users/w3/.config/emby-server/plugins/Emby.M3UTuner.dll has version 1.0.39.0
+Info App: File /Applications/EmbyServer.app/Contents/Resources/plugins/Emby.M3UTuner.dll has version 1.0.39.0
+Info App: File /Users/w3/.config/emby-server/plugins/OMDb.dll has version 1.0.22.0
+Info App: File /Applications/EmbyServer.app/Contents/Resources/plugins/OMDb.dll has version 1.0.21.0
+Info App: File /Users/w3/.config/emby-server/plugins/DvdMounter.dll has version 1.0.0.0
+Info App: File /Applications/EmbyServer.app/Contents/Resources/plugins/DvdMounter.dll has version 1.0.0.0
+Info App: File /Users/w3/.config/emby-server/plugins/AudioDb.dll has version 1.0.20.0
+Info App: File /Applications/EmbyServer.app/Contents/Resources/plugins/AudioDb.dll has version 1.0.18.0
+Info App: File /Users/w3/.config/emby-server/plugins/Emby.Server.CinemaMode.dll has version 1.0.47.0
+Info App: File /Applications/EmbyServer.app/Contents/Resources/plugins/Emby.Server.CinemaMode.dll has version 1.0.47.0
+Info App: Loading Emby.Api, Version=4.9.0.42, Culture=neutral, PublicKeyToken=null
+Info App: Loading Emby.Web, Version=4.9.0.42, Culture=neutral, PublicKeyToken=null
+Info App: Loading MediaBrowser.Model, Version=4.9.0.42, Culture=neutral, PublicKeyToken=null
+Info App: Loading MediaBrowser.Common, Version=4.9.0.42, Culture=neutral, PublicKeyToken=null
+Info App: Loading MediaBrowser.Controller, Version=4.9.0.42, Culture=neutral, PublicKeyToken=null
+Info App: Loading Emby.Providers, Version=4.9.0.42, Culture=neutral, PublicKeyToken=null
+Info App: Loading Emby.Photos, Version=4.9.0.42, Culture=neutral, PublicKeyToken=null
+Info App: Loading Emby.Server.Implementations, Version=4.9.0.42, Culture=neutral, PublicKeyToken=null
+Info App: Loading Emby.LiveTV, Version=4.9.0.42, Culture=neutral, PublicKeyToken=null
+Info App: Loading Emby.ActivityLog, Version=4.9.0.42, Culture=neutral, PublicKeyToken=null
+Info App: Loading Emby.Server.MediaEncoding, Version=4.9.0.42, Culture=neutral, PublicKeyToken=null
+Info App: Loading Emby.LocalMetadata, Version=4.9.0.42, Culture=neutral, PublicKeyToken=null
+Info App: Loading Emby.Notifications, Version=4.9.0.42, Culture=neutral, PublicKeyToken=null
+Info App: Loading Emby.Web.GenericUI, Version=4.9.0.42, Culture=neutral, PublicKeyToken=null
+Info App: Loading Emby.Codecs.Dxva, Version=4.9.0.42, Culture=neutral, PublicKeyToken=null
+Info App: Loading Emby.Codecs, Version=4.9.0.42, Culture=neutral, PublicKeyToken=null
+Info App: Loading Emby.Server.Connect, Version=4.9.0.42, Culture=neutral, PublicKeyToken=null
+Info App: Loading Emby.Server.Sync, Version=4.9.0.42, Culture=neutral, PublicKeyToken=null
+Info App: Loading EmbyServer, Version=4.9.0.42, Culture=neutral, PublicKeyToken=null
+Info App: Loading OpenSubtitles, Version=1.0.63.0, Culture=neutral, PublicKeyToken=null from /Users/w3/.config/emby-server/plugins/OpenSubtitles.dll
+Info App: Loading EmbyGuideData, Version=1.0.18.0, Culture=neutral, PublicKeyToken=null from /Users/w3/.config/emby-server/plugins/EmbyGuideData.dll
+Info App: Loading NfoMetadata, Version=1.0.82.0, Culture=neutral, PublicKeyToken=null from /Users/w3/.config/emby-server/plugins/NfoMetadata.dll
+Info App: Loading SubDb, Version=1.0.7.0, Culture=neutral, PublicKeyToken=null from /Users/w3/.config/emby-server/plugins/SubDb.dll
+Info App: Loading MovieDb, Version=1.8.3.0, Culture=neutral, PublicKeyToken=null from /Users/w3/.config/emby-server/plugins/MovieDb.dll
+Info App: Loading Emby.Webhooks, Version=1.0.35.0, Culture=neutral, PublicKeyToken=null from /Users/w3/.config/emby-server/plugins/Emby.Webhooks.dll
+Info App: Loading Emby.PortMapper, Version=1.2.8.0, Culture=neutral, PublicKeyToken=null from /Users/w3/.config/emby-server/plugins/Emby.PortMapper.dll
+Info App: Loading BlurayMounter, Version=1.0.2.0, Culture=neutral, PublicKeyToken=null from /Users/w3/.config/emby-server/plugins/BlurayMounter.dll
+Info App: Loading Tvdb, Version=1.6.1.0, Culture=neutral, PublicKeyToken=null from /Users/w3/.config/emby-server/plugins/Tvdb.dll
+Info App: Loading InfuseSync, Version=1.5.1.0, Culture=neutral, PublicKeyToken=null from /Users/w3/.config/emby-server/plugins/InfuseSync.dll
+Info App: Loading statistics, Version=3.4.1.1, Culture=neutral, PublicKeyToken=null from /Users/w3/.config/emby-server/plugins/Statistics.dll
+Info App: Loading StudioImages, Version=1.0.3.0, Culture=neutral, PublicKeyToken=null from /Users/w3/.config/emby-server/plugins/StudioImages.dll
+Info App: Loading MBBackup, Version=1.7.2.0, Culture=neutral, PublicKeyToken=null from /Users/w3/.config/emby-server/plugins/MBBackup.dll
+Info App: Loading Emby.XmlTV, Version=1.2.0.0, Culture=neutral, PublicKeyToken=null from /Users/w3/.config/emby-server/plugins/Emby.XmlTV.dll
+Info App: Loading Emby.Dlna, Version=1.4.7.0, Culture=neutral, PublicKeyToken=null from /Users/w3/.config/emby-server/plugins/Emby.Dlna.dll
+Info App: Loading Fanart, Version=1.0.16.0, Culture=neutral, PublicKeyToken=null from /Users/w3/.config/emby-server/plugins/Fanart.dll
+Info App: Loading Podnapisi, Version=1.0.9.0, Culture=neutral, PublicKeyToken=null from /Users/w3/.config/emby-server/plugins/Podnapisi.dll
+Info App: Loading MusicBrainz, Version=1.0.25.0, Culture=neutral, PublicKeyToken=null from /Users/w3/.config/emby-server/plugins/MusicBrainz.dll
+Info App: Loading playback_reporting, Version=2.1.0.6, Culture=neutral, PublicKeyToken=null from /Users/w3/.config/emby-server/plugins/playback_reporting.dll
+Info App: Loading MediaBrowser.Plugins.SmtpNotifications, Version=3.2.0.0, Culture=neutral, PublicKeyToken=null from /Users/w3/.config/emby-server/plugins/MediaBrowser.Plugins.SmtpNotifications.dll
+Info App: Loading Emby.M3UTuner, Version=1.0.39.0, Culture=neutral, PublicKeyToken=null from /Users/w3/.config/emby-server/plugins/Emby.M3UTuner.dll
+Info App: Loading AutoBoxSets, Version=1.2.7.0, Culture=neutral, PublicKeyToken=null from /Users/w3/.config/emby-server/plugins/AutoBoxSets.dll
+Info App: Loading OMDb, Version=1.0.22.0, Culture=neutral, PublicKeyToken=null from /Users/w3/.config/emby-server/plugins/OMDb.dll
+Info App: Loading DvdMounter, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null from /Users/w3/.config/emby-server/plugins/DvdMounter.dll
+Info App: Loading AudioDb, Version=1.0.20.0, Culture=neutral, PublicKeyToken=null from /Users/w3/.config/emby-server/plugins/AudioDb.dll
+Info App: Loading Emby.Server.CinemaMode, Version=1.0.47.0, Culture=neutral, PublicKeyToken=null from /Users/w3/.config/emby-server/plugins/Emby.Server.CinemaMode.dll
+Info App: Loading GenreCleaner, Version=1.0.25.0, Culture=neutral, PublicKeyToken=null from /Users/w3/.config/emby-server/plugins/GenreCleaner.dll
+Info SqliteUserRepository: Initializing PooledDatabaseConnectionManager with pool size: 3
+Info SqliteUserRepository: Sqlite version: 3.47.1
+Info SqliteUserRepository: Sqlite compiler options: ATOMIC_INTRINSICS=1,COMPILER=clang-18.1.8,DEFAULT_AUTOVACUUM,DEFAULT_CACHE_SIZE=-2000,DEFAULT_FILE_FORMAT=4,DEFAULT_JOURNAL_SIZE_LIMIT=-1,DEFAULT_MMAP_SIZE=0,DEFAULT_PAGE_SIZE=4096,DEFAULT_PCACHE_INITSZ=20,DEFAULT_RECURSIVE_TRIGGERS,DEFAULT_SECTOR_SIZE=4096,DEFAULT_SYNCHRONOUS=2,DEFAULT_WAL_AUTOCHECKPOINT=1000,DEFAULT_WAL_SYNCHRONOUS=2,DEFAULT_WORKER_THREADS=0,DIRECT_OVERFLOW_READ,ENABLE_COLUMN_METADATA,ENABLE_DBSTAT_VTAB,ENABLE_FTS3,ENABLE_FTS3_PARENTHESIS,ENABLE_FTS3_TOKENIZER,ENABLE_FTS4,ENABLE_FTS5,ENABLE_GEOPOLY,ENABLE_MATH_FUNCTIONS,ENABLE_PREUPDATE_HOOK,ENABLE_RTREE,ENABLE_SESSION,ENABLE_UNLOCK_NOTIFY,ENABLE_UPDATE_DELETE_LIMIT,LIKE_DOESNT_MATCH_BLOBS,MALLOC_SOFT_LIMIT=1024,MAX_ATTACHED=10,MAX_COLUMN=2000,MAX_COMPOUND_SELECT=500,MAX_DEFAULT_PAGE_SIZE=8192,MAX_EXPR_DEPTH=1000,MAX_FUNCTION_ARG=127,MAX_LENGTH=1000000000,MAX_LIKE_PATTERN_LENGTH=50000,MAX_MMAP_SIZE=0x7fff0000,MAX_PAGE_COUNT=0xfffffffe,MAX_PAGE_SIZE=65536,MAX_SCHEMA_RETRY=25,MAX_SQL_LENGTH=1000000000,MAX_TRIGGER_DEPTH=1000,MAX_VARIABLE_NUMBER=250000,MAX_VDBE_OP=250000000,MAX_WORKER_THREADS=8,MUTEX_PTHREADS,OMIT_LOOKASIDE,SECURE_DELETE,SYSTEM_MALLOC,TEMP_STORE=1,THREADSAFE=1
+Info SqliteUserRepository: Sqlite ThreadSafe: 1
+Info SqliteUserRepository: Sqlite ThreadingMode: MultiThreaded
+Info SqliteUserRepository: Opening sqlite connection to /Users/w3/.config/emby-server/data/users.db. isReadOnly: False
+Info SqliteUserRepository: Default journal_mode for /Users/w3/.config/emby-server/data/users.db is wal
+Info SqliteUserRepository: PRAGMA cache_size=-32768
+Info SqliteUserRepository: PRAGMA page_size=4096
+Info SqliteUserRepository: PRAGMA foreign_keys=1
+Info SqliteUserRepository: PRAGMA SECURE_DELETE=0
+Info SqliteUserRepository: Result of setting SQLITE_DBCONFIG_DQS_DDL to 0 is 0
+Info SqliteUserRepository: Result of setting SQLITE_DBCONFIG_DQS_DML to 0 is 0
+Info SqliteItemRepository: Initializing PooledDatabaseConnectionManager with pool size: 20
+Info AuthenticationRepository: Initializing PooledDatabaseConnectionManager with pool size: 5
+Info ActivityRepository: Initializing PooledDatabaseConnectionManager with pool size: 3
+Info ActivityRepository: Opening sqlite connection to /Users/w3/.config/emby-server/data/activitylog.db. isReadOnly: False
+Info ActivityRepository: Default journal_mode for /Users/w3/.config/emby-server/data/activitylog.db is wal
+Info ActivityRepository: PRAGMA cache_size=-32768
+Info ActivityRepository: PRAGMA page_size=4096
+Info ActivityRepository: PRAGMA foreign_keys=1
+Info ActivityRepository: PRAGMA SECURE_DELETE=0
+Info ActivityRepository: Result of setting SQLITE_DBCONFIG_DQS_DDL to 0 is 0
+Info ActivityRepository: Result of setting SQLITE_DBCONFIG_DQS_DML to 0 is 0
+Info NetworkManager: Detecting local network addresses
+Info NetworkManager: networkInterface: Ethernet en0, Speed: 1000000000, Description: en0
+Info NetworkManager: GatewayAddresses: 173.13.191.242
+Info NetworkManager: UnicastAddresses: 173.13.191.241
+Info NetworkManager: networkInterface: Wireless80211 en1, Speed: 5250000, Description: en1
+Info NetworkManager: GatewayAddresses: 10.1.10.1,fe80::fad2:acff:fec0:357f%6
+Info NetworkManager: UnicastAddresses: fe80::90:275c:8c83:eb7b%6,10.1.10.163,2603:3024:41e:300:850:af4c:9992:f874,2603:3024:41e:300:e8dd:b05d:fa0c:43d1,2603:3024:41e:300::8970,2603:3024:41e:300:3c67:1e01:a7ee:e301,2603:3024:41e:300:3842:189a:56d3:dc80
+Info NetworkManager: networkInterface: Wireless80211 awdl0, Speed: 10000000, Description: awdl0
+Info NetworkManager: GatewayAddresses: 
+Info NetworkManager: UnicastAddresses: fe80::2c4a:2eff:fe26:467b%9
+Info NetworkManager: networkInterface: Loopback lo0, Speed: 0, Description: lo0
+Info NetworkManager: GatewayAddresses: 
+Info NetworkManager: UnicastAddresses: 127.0.0.1,::1,fe80::1%1
+Info NetworkManager: networkInterface: Unknown utun0, Speed: 0, Description: utun0
+Info NetworkManager: GatewayAddresses: fe80::%10
+Info NetworkManager: UnicastAddresses: fe80::9c95:a612:1ec:4402%10
+Info NetworkManager: networkInterface: Unknown utun1, Speed: 0, Description: utun1
+Info NetworkManager: GatewayAddresses: fe80::%11
+Info NetworkManager: UnicastAddresses: fe80::7c43:1470:a01a:b1b8%11
+Info NetworkManager: Detected local ip addresses: [{"IPAddress":"173.13.191.241","HasGateWayAddress":true,"PrefixLength":30,"IPv4Mask":"255.255.255.252"},{"IPAddress":"10.1.10.163","HasGateWayAddress":true,"PrefixLength":24,"IPv4Mask":"255.255.255.0"},{"IPAddress":"fe80::90:275c:8c83:eb7b%6","HasGateWayAddress":true,"PrefixLength":64},{"IPAddress":"2603:3024:41e:300:850:af4c:9992:f874","HasGateWayAddress":true,"PrefixLength":64},{"IPAddress":"2603:3024:41e:300:e8dd:b05d:fa0c:43d1","HasGateWayAddress":true,"PrefixLength":64},{"IPAddress":"2603:3024:41e:300::8970","HasGateWayAddress":true,"PrefixLength":64},{"IPAddress":"2603:3024:41e:300:3c67:1e01:a7ee:e301","HasGateWayAddress":true,"PrefixLength":64},{"IPAddress":"2603:3024:41e:300:3842:189a:56d3:dc80","HasGateWayAddress":true,"PrefixLength":64},{"IPAddress":"fe80::9c95:a612:1ec:4402%10","HasGateWayAddress":true,"PrefixLength":64},{"IPAddress":"fe80::7c43:1470:a01a:b1b8%11","HasGateWayAddress":true,"PrefixLength":64},{"IPAddress":"127.0.0.1","HasGateWayAddress":false,"PrefixLength":8,"IPv4Mask":"255.0.0.0"},{"IPAddress":"fe80::2c4a:2eff:fe26:467b%9","HasGateWayAddress":false,"PrefixLength":64},{"IPAddress":"::1","HasGateWayAddress":false,"PrefixLength":128},{"IPAddress":"fe80::1%1","HasGateWayAddress":false,"PrefixLength":64}]
+Info App: Adding HttpListener prefix http://+:8096/
+Info AuthenticationRepository: Opening sqlite connection to /Users/w3/.config/emby-server/data/authentication.db. isReadOnly: False
+Info AuthenticationRepository: Default journal_mode for /Users/w3/.config/emby-server/data/authentication.db is wal
+Info AuthenticationRepository: PRAGMA cache_size=-32768
+Info AuthenticationRepository: PRAGMA page_size=4096
+Info AuthenticationRepository: PRAGMA foreign_keys=1
+Info AuthenticationRepository: PRAGMA SECURE_DELETE=0
+Info AuthenticationRepository: Result of setting SQLITE_DBCONFIG_DQS_DDL to 0 is 0
+Info AuthenticationRepository: Result of setting SQLITE_DBCONFIG_DQS_DML to 0 is 0
+Info SqliteItemRepository: Opening sqlite connection to /Users/w3/.config/emby-server/data/library.db. isReadOnly: False
+Info SqliteItemRepository: Default journal_mode for /Users/w3/.config/emby-server/data/library.db is wal
+Info SqliteItemRepository: PRAGMA cache_size=-196608
+Info SqliteItemRepository: PRAGMA page_size=4096
+Info SqliteItemRepository: PRAGMA foreign_keys=1
+Info SqliteItemRepository: PRAGMA SECURE_DELETE=0
+Info SqliteItemRepository: Result of setting SQLITE_DBCONFIG_DQS_DDL to 0 is 0
+Info SqliteItemRepository: Result of setting SQLITE_DBCONFIG_DQS_DML to 0 is 0
+Info SqliteItemRepository: Init Complete
+Info SqliteItemRepository: Opening sqlite connection to /Users/w3/.config/emby-server/data/library.db. isReadOnly: True
+Info SqliteItemRepository: PRAGMA cache_size=-196608
+Info SqliteItemRepository: PRAGMA page_size=4096
+Info SqliteItemRepository: PRAGMA foreign_keys=1
+Info SqliteItemRepository: PRAGMA SECURE_DELETE=0
+Info SqliteItemRepository: Result of setting SQLITE_DBCONFIG_DQS_DDL to 0 is 0
+Info SqliteItemRepository: Result of setting SQLITE_DBCONFIG_DQS_DML to 0 is 0
+Info SqliteUserRepository: Opening sqlite connection to /Users/w3/.config/emby-server/data/users.db. isReadOnly: True
+Info SqliteUserRepository: PRAGMA cache_size=-32768
+Info SqliteUserRepository: PRAGMA page_size=4096
+Info SqliteUserRepository: PRAGMA foreign_keys=1
+Info SqliteUserRepository: PRAGMA SECURE_DELETE=0
+Info SqliteUserRepository: Result of setting SQLITE_DBCONFIG_DQS_DDL to 0 is 0
+Info SqliteUserRepository: Result of setting SQLITE_DBCONFIG_DQS_DML to 0 is 0
+Info App: Emby Server 4.9.0.42
+	Command line: /Applications/EmbyServer.app/Contents/MacOS/EmbyServer.dll
+	Operating system: Darwin 19.6.0 Darwin Kernel Version 19.6.0: Tue Jun 21 21:18:39 PDT 2022; root:xnu-6153.141.66~1/RELEASE_X86_64
+	OS/Process: x64/x64
+	Framework: .NET 6.0.36
+	Runtime: Applications/EmbyServer.app/Contents/MacOS/System.Private.CoreLib.dll
+	Processor count: 8
+	Data path: /Users/w3/.config/emby-server
+	Application path: /Applications/EmbyServer.app/Contents/MacOS
+Info App: Logs path: /Users/w3/.config/emby-server/logs
+Info App: Cache path: /Volumes/Drobo/Emby cache/cache
+Info App: Internal metadata path: /Users/w3/.config/emby-server/metadata
+Info App: Transcoding temporary files path: /Users/w3/.config/emby-server/transcoding-temp
+Info App: DefaultThreadCurrentCulture: en-US
+Info App: DefaultThreadCurrentUICulture: en-US
+Info App: DefaultThreadCurrentUICulture: en-US
+Info App: Server Friendly Name: ‌Tim's iMac‌
+Info App: Local time: 3/21/2025 1:11:42 PM -07:00
+Info InfuseSync: InfuseSync is starting.
+Info FfmpegManager: FFMpeg: /Applications/EmbyServer.app/Contents/MacOS/ffmpeg
+Info FfmpegManager: FFProbe: /Applications/EmbyServer.app/Contents/MacOS/ffprobe
+Info FfmpegManager: FFDetect: /Applications/EmbyServer.app/Contents/MacOS/ffdetect
+Info Skia: SkiaSharp version: 2.88.0.0
+Info libvips: NetVips version: 3.0.0.0
+Info ImageProcessor: Adding image processor Skia
+Info ImageProcessor: Adding image processor libvips
+Info App: Infuse housekeeping task scheduled.
+Info NewMediaReportNotification - TaskNotifictionReport: NewMediaReportNotification Loaded
+Info UserActivityReportNotification - TaskNotifictionReport: UserActivityReportNotification Loaded
+Info PlaybackReporting - TaskRunBackup: TaskCleanDb Loaded
+Info TaskManager: Daily trigger for Scan Metadata Folder set to fire at 03/22/2025 02:30:00, which is 798.2772383166666 minutes from now.
+Info TaskManager: Daily trigger for Download subtitles set to fire at 03/22/2025 03:00:00, which is 828.2772124833333 minutes from now.
+Info TaskManager: Daily trigger for Video preview thumbnail extraction set to fire at 03/22/2025 02:00:00, which is 768.2771947166667 minutes from now.
+Info TaskManager: Daily trigger for Detect Episode Intros set to fire at 03/22/2025 04:00:00, which is 888.2762727666667 minutes from now.
+Info TaskManager: Daily trigger for Rotate log file set to fire at 03/22/2025 00:00:00, which is 648.2761318166666 minutes from now.
+Info TaskManager: Queueing task HardwareDetectionScheduledTask
+Info TaskManager: Executing Hardware Detection
+Info TaskManager: Daily trigger for Remove Old Cached Data set to fire at 03/22/2025 00:01:00, which is 649.2759329666667 minutes from now.
+Info TaskManager: Daily trigger for Calculate statistics for all users set to fire at 03/22/2025 03:00:00, which is 828.2758568 minutes from now.
+Info TaskManager: Daily trigger for Calculate statistics for TV Shows set to fire at 03/22/2025 00:15:00, which is 663.2758473333333 minutes from now.
+Info TaskManager: Daily trigger for Emby Server Backup set to fire at 03/22/2025 00:10:00, which is 658.2756653833334 minutes from now.
+Info TaskManager: Daily trigger for Trim Db set to fire at 03/22/2025 00:05:00, which is 653.2756569666667 minutes from now.
+Info TaskManager: Daily trigger for Create Playlists set to fire at 03/22/2025 03:00:00, which is 828.27564955 minutes from now.
+Info TaskManager: Daily trigger for New Media Notification set to fire at 03/22/2025 06:00:00, which is 1008.2756421666667 minutes from now.
+Info TaskManager: Daily trigger for User Activity Notification set to fire at 03/22/2025 00:20:00, which is 668.2756354333334 minutes from now.
+Info App: ServerId: c03a85ad5ee545dda865a0acc2e06591
+Info FfmpegManager: ProcessRun 'ffmpeg -hide_banner -version' Execute: /Applications/EmbyServer.app/Contents/MacOS/ffmpeg -hide_banner -version
+Info FfmpegManager: ProcessRun 'ffmpeg -hide_banner -version' Process exited with code 0 - Succeeded
+Info FfmpegManager: FfmpegValidator.Validate complete
+Info App: Starting entry point Emby.Server.Implementations.Networking.RemoteAddressEntryPoint
+Info App: Loading data from /Users/w3/.config/emby-server/data/wan.dat
+Info App: Entry point completed: Emby.Server.Implementations.Networking.RemoteAddressEntryPoint. Duration: 0.003098 seconds
+Info App: Starting entry point Emby.Server.Connect.ConnectEntryPoint
+Info App: Loading data from /Users/w3/.config/emby-server/data/connect.txt
+Info App: Entry point completed: Emby.Server.Connect.ConnectEntryPoint. Duration: 0.003369 seconds
+Info App: Starting entry point Emby.Dlna.Main.DlnaEntryPoint
+Info App: Entry point completed: Emby.Dlna.Main.DlnaEntryPoint. Duration: 0.033661 seconds
+Info App: Core startup complete
+Info App: Starting entry point Emby.Server.Implementations.Udp.UdpServerEntryPoint
+Info App: Entry point completed: Emby.Server.Implementations.Udp.UdpServerEntryPoint. Duration: 0.001414 seconds
+Info App: Starting entry point Emby.Server.Implementations.Playlists.PlaylistUpgradeEntryPoint
+Info App: Entry point completed: Emby.Server.Implementations.Playlists.PlaylistUpgradeEntryPoint. Duration: 0.002688 seconds
+Info App: Starting entry point Emby.Server.Implementations.Library.DeviceAccessEntryPoint
+Info App: Entry point completed: Emby.Server.Implementations.Library.DeviceAccessEntryPoint. Duration: 0.000494 seconds
+Info App: Starting entry point Emby.Server.Implementations.IO.LibraryMonitorStartup
+Info App: Entry point completed: Emby.Server.Implementations.IO.LibraryMonitorStartup. Duration: 0.038816 seconds
+Info App: Starting entry point Emby.Server.Implementations.EntryPoints.AutomaticRestartEntryPoint
+Info App: Entry point completed: Emby.Server.Implementations.EntryPoints.AutomaticRestartEntryPoint. Duration: 0.000813 seconds
+Info App: Starting entry point Emby.Server.Implementations.EntryPoints.KeepServerAwake
+Info App: Entry point completed: Emby.Server.Implementations.EntryPoints.KeepServerAwake. Duration: 0.000173 seconds
+Info App: Starting entry point Emby.Server.Implementations.EntryPoints.LibraryChangedNotifier
+Info App: Entry point completed: Emby.Server.Implementations.EntryPoints.LibraryChangedNotifier. Duration: 0.001654 seconds
+Info App: Starting entry point Emby.Server.Implementations.EntryPoints.LogLibrariesEntryPoint
+Info App: Libraries
+	Library:  Movies, id: 4, CollectionType: movies
+	Configured paths: /Volumes/Drobo/Movies and TV Shows/_MOVIES
+	Library Folder: _MOVIES, id: 314402: path: /Volumes/Drobo/Movies and TV Shows/_MOVIES
+	Library:  TV shows, id: 39192, CollectionType: tvshows
+	Configured paths: /Volumes/Drobo/Movies and TV Shows/_TV
+	Library Folder: _TV, id: 39191: path: /Volumes/Drobo/Movies and TV Shows/_TV
+	Library:  Collections, id: 136585, CollectionType: boxsets
+	Configured paths: 
+	Library:  Playlists, id: 136839, CollectionType: playlists
+	Configured paths: /Users/w3/.config/emby-server/data/playlists,/Users/w3/.config/emby-server/data/userplaylists
+	Library Folder: playlists, id: 136838: path: /Users/w3/.config/emby-server/data/playlists
+	Library Folder: userplaylists, id: 353571: path: /Users/w3/.config/emby-server/data/userplaylists
+	Library:  Home Made, id: 137328, CollectionType: movies
+	Configured paths: /Volumes/Drobo/Movies and TV Shows/_HomeMade/Elite Dangerous Tutorials,/Volumes/Drobo/Movies and TV Shows/_HomeMade/Tim, Dan, Zahna, Alan Mount,/Volumes/Drobo/Movies and TV Shows/_HomeMade/Tim's Music
+	Library Folder: Elite Dangerous Tutorials, id: 137377: path: /Volumes/Drobo/Movies and TV Shows/_HomeMade/Elite Dangerous Tutorials
+	Library Folder: Tim, Dan, Zahna, Alan Mount, id: 137415: path: /Volumes/Drobo/Movies and TV Shows/_HomeMade/Tim, Dan, Zahna, Alan Mount
+	Library Folder: Tim's Music, id: 137430: path: /Volumes/Drobo/Movies and TV Shows/_HomeMade/Tim's Music
+	Library:  Music By Tim, id: 137361, CollectionType: music
+	Configured paths: /Volumes/Drobo/Movies and TV Shows/_HomeMade/Tim's Homemade MP3's
+	Library Folder: Tim's Homemade MP3's, id: 137398: path: /Volumes/Drobo/Movies and TV Shows/_HomeMade/Tim's Homemade MP3's
+	Library:  Music, id: 138566, CollectionType: music
+	Configured paths: /Volumes/Drobo/Plex Music folder
+	Library Folder: Plex Music folder, id: 182389: path: /Volumes/Drobo/Plex Music folder
+	Library:  Music videos, id: 152632, CollectionType: musicvideos
+	Configured paths: /Volumes/Drobo/Movies and TV Shows/_Music Videos
+	Library Folder: _Music Videos, id: 152631: path: /Volumes/Drobo/Movies and TV Shows/_Music Videos
+	Library:  Educational, id: 152803, CollectionType: tvshows
+	Configured paths: /Volumes/Drobo/Movies and TV Shows/_Education
+	Library Folder: _Education, id: 152802: path: /Volumes/Drobo/Movies and TV Shows/_Education
+	Library:  Fred Hall's SwingThing, id: 202130, CollectionType: music
+	Configured paths: /Volumes/Drobo/SwingThing0/SWING THING for iTunes (64GB USB, complete)/SwingThing HD Library for iTunes
+	Library Folder: SwingThing HD Library for iTunes, id: 202129: path: /Volumes/Drobo/SwingThing0/SWING THING for iTunes (64GB USB, complete)/SwingThing HD Library for iTunes
+	Library:  3D Movies, id: 324114, CollectionType: 
+	Configured paths: /Volumes/Drobo/Movies and TV Shows/_3DSBS Movies
+	Library Folder: _3DSBS Movies, id: 365558: path: /Volumes/Drobo/Movies and TV Shows/_3DSBS Movies
+	Library:  Cin Test Uploads, id: 340299, CollectionType: 
+	Configured paths: /Volumes/Drobo/Movies and TV Shows/Cin Uploads symlink,/Volumes/Drobo/Movies and TV Shows/Cin Test
+	Library Folder: Cin Test, id: 340828: path: /Volumes/Drobo/Movies and TV Shows/Cin Test
+	Library Folder: Cin Uploads symlink, id: 340393: path: /Volumes/Drobo/Movies and TV Shows/Cin Uploads symlink
+	Library:  OddBalls, id: 349564, CollectionType: movies
+	Configured paths: /Volumes/Drobo/Movies and TV Shows/_Oddballs
+	Library Folder: _Oddballs, id: 349563: path: /Volumes/Drobo/Movies and TV Shows/_Oddballs
+	Library:  Mixed Content, id: 368372, CollectionType: movies
+	Configured paths: /Volumes/Drobo/Sexy
+	Library Folder: Sexy, id: 368373: path: /Volumes/Drobo/Sexy
+Info App: Entry point completed: Emby.Server.Implementations.EntryPoints.LogLibrariesEntryPoint. Duration: 0.005435 seconds
+Info App: Starting entry point Emby.Server.Implementations.EntryPoints.ServerEventNotifier
+Info App: Entry point completed: Emby.Server.Implementations.EntryPoints.ServerEventNotifier. Duration: 0.004237 seconds
+Info App: Starting entry point Emby.Server.Implementations.EntryPoints.StartupWizard
+Info App: ProcessRun 'LaunchWebBrowser' Execute: http://localhost:8096/web/index.html 
+Info App: Entry point completed: Emby.Server.Implementations.EntryPoints.StartupWizard. Duration: 0.0184 seconds
+Info App: Starting entry point Emby.Server.Implementations.EntryPoints.SystemEvents
+Info App: Entry point completed: Emby.Server.Implementations.EntryPoints.SystemEvents. Duration: 0.000803 seconds
+Info App: Starting entry point Emby.Server.Implementations.EntryPoints.UserDataChangeNotifier
+Info App: Entry point completed: Emby.Server.Implementations.EntryPoints.UserDataChangeNotifier. Duration: 0.000687 seconds
+Info App: Starting entry point Emby.Server.Implementations.Channels.ChannelsEntryPoint
+Info SoftwareCodecProvider: h264, libx264, x264, V-E-libx264
+Info SoftwareCodecProvider: hevc, libx265, x265, V-E-libx265
+Info App: Entry point completed: Emby.Server.Implementations.Channels.ChannelsEntryPoint. Duration: 0.002981 seconds
+Info App: Starting entry point Emby.LiveTV.EntryPoint
+Info SoftwareCodecProvider: mpeg4, mpeg4, MPEG-4 part 2, V-E-mpeg4
+Info SoftwareCodecProvider: msmpeg4v3, msmpeg4, MPEG-4 part 2 (MS Variant 3), V-E-msmpeg4
+Info SoftwareCodecProvider: vp8, libvpx, libvpx VP8, V-E-libvpx
+Info SoftwareCodecProvider: av1, libaom-av1, libaom-av1, V-E-libaom_av1
+Info LiveTV: Loading live tv data from /Users/w3/.config/emby-server/data/livetv/timers
+Info SoftwareCodecProvider: h264, libx264, x264, V-E-libx264
+Info SoftwareCodecProvider: hevc, libx265, x265, V-E-libx265
+Info SoftwareCodecProvider: mpeg4, mpeg4, MPEG-4 part 2, V-E-mpeg4
+Info SoftwareCodecProvider: msmpeg4v3, msmpeg4, MPEG-4 part 2 (MS Variant 3), V-E-msmpeg4
+Info SoftwareCodecProvider: vp8, libvpx, libvpx VP8, V-E-libvpx
+Info SoftwareCodecProvider: av1, libaom-av1, libaom-av1, V-E-libaom_av1
+Info App: Entry point completed: Emby.LiveTV.EntryPoint. Duration: 0.031124 seconds
+Info App: Starting entry point Emby.LiveTV.RecordingNotifier
+Info App: Entry point completed: Emby.LiveTV.RecordingNotifier. Duration: 0.003507 seconds
+Info App: Starting entry point Emby.ActivityLog.ActivityLogEntryPoint
+Info App: Entry point completed: Emby.ActivityLog.ActivityLogEntryPoint. Duration: 0.004461 seconds
+Info App: Starting entry point Emby.Server.MediaEncoding.Api.EncodingManagerEntryPoint
+Info LibraryMonitor: Watching directory with new FileSystemWatcher for /Volumes/Drobo/Movies and TV Shows/_3DSBS Movies for item 365558
+Info App: Entry point completed: Emby.Server.MediaEncoding.Api.EncodingManagerEntryPoint. Duration: 0.049219 seconds
+Info App: Starting entry point Emby.Notifications.NotificationManagerEntryPoint
+Info Notifications: Registering event nofitier Emby Server User Notifications
+Info Notifications: Registering event factory CoreNotificationTypeFactory
+Info Notifications: Registering event factory BackupNotificationTypeFactory
+Info Notifications: Registering event factory MyNotifications
+Info App: Entry point completed: Emby.Notifications.NotificationManagerEntryPoint. Duration: 0.027459 seconds
+Info App: Starting entry point Emby.Server.Sync.SyncNotificationEntryPoint
+Info App: Entry point completed: Emby.Server.Sync.SyncNotificationEntryPoint. Duration: 0.009043 seconds
+Info App: Starting entry point EmbyServer.Windows.LoopUtilEntryPoint
+Info App: Entry point completed: EmbyServer.Windows.LoopUtilEntryPoint. Duration: 0.000354 seconds
+Info App: Starting entry point NfoMetadata.EntryPoint
+Info App: Entry point completed: NfoMetadata.EntryPoint. Duration: 0.000364 seconds
+Info App: Starting entry point MovieDb.Security.PluginStartup
+Info App: Entry point completed: MovieDb.Security.PluginStartup. Duration: 0.002617 seconds
+Info App: Starting entry point Emby.Webhooks.MigrationEntryPoint
+Info App: Entry point completed: Emby.Webhooks.MigrationEntryPoint. Duration: 0.004666 seconds
+Info App: Starting entry point Emby.PortMapper.ExternalPortForwarding
+Info App: Entry point completed: Emby.PortMapper.ExternalPortForwarding. Duration: 0.002203 seconds
+Info App: Starting entry point Tvdb.EntryPoint
+Info App: Entry point completed: Tvdb.EntryPoint. Duration: 4.7E-05 seconds
+Info App: Starting entry point InfuseSync.EntryPoints.LibrarySyncManager
+Info App: Entry point completed: InfuseSync.EntryPoints.LibrarySyncManager. Duration: 0.000353 seconds
+Info App: Starting entry point InfuseSync.EntryPoints.UserSyncManager
+Info App: Entry point completed: InfuseSync.EntryPoints.UserSyncManager. Duration: 0.000147 seconds
+Info App: Starting entry point MBBackup.ServerEntryPoint
+Info App: Entry point completed: MBBackup.ServerEntryPoint. Duration: 5.3E-05 seconds
+Info App: Starting entry point playback_reporting.EventMonitorEntryPoint
+Info PlaybackReporting - EventMonitorEntryPoint: EventMonitorEntryPoint Running
+Info PlaybackReporting - EventMonitorEntryPoint: ActivityRepository : Creating
+Info PlaybackReporting - EventMonitorEntryPoint: ActivityRepository : CreateConnection : /Users/w3/.config/emby-server/data/playback_reporting.db
+Info PlaybackReporting - EventMonitorEntryPoint: ActivityRepository : ConnectionCreated : 19205251
+Info PlaybackReporting - EventMonitorEntryPoint: ActivityRepository : New Instance Created : 38629533
+Info PlaybackReporting - EventMonitorEntryPoint: Table Actual Cols : DateCreated DATETIME, UserId TEXT, ItemId TEXT, ItemType TEXT, ItemName TEXT, PlaybackMethod TEXT, ClientName TEXT, DeviceName TEXT, PlayDuration INT, PauseDuration INT, RemoteAddress TEXT, TranscodeReasons TEXT
+Info PlaybackReporting - EventMonitorEntryPoint: Table Alter SQL : 
+Info App: Entry point completed: playback_reporting.EventMonitorEntryPoint. Duration: 0.006565 seconds
+Info App: Starting entry point Emby.Security.PluginSecurityManager
+Info App: Entry point completed: Emby.Security.PluginSecurityManager. Duration: 6.3E-05 seconds
+Info App: Starting entry point Emby.Server.CinemaMode.IntrosEntryPoint
+Info App: Entry point completed: Emby.Server.CinemaMode.IntrosEntryPoint. Duration: 0.000174 seconds
+Info App: Starting entry point Emby.Security.PluginSecurityManager
+Info App: Entry point completed: Emby.Security.PluginSecurityManager. Duration: 5.7E-05 seconds
+Info App: All entry points have started
+ * Serving Flask app 'app'
+ * Debug mode: off
+Info App: Disposing CoreAppHost
+Info App: Disposing PluginSecurityManager
+Info App: Disposing IntrosEntryPoint
+Info App: Disposing PluginSecurityManager
+Info App: Disposing EventMonitorEntryPoint
+Info App: Disposing DlnaEntryPoint
+Info DLNA: Disposing PlayToManager
+Info App: Disposing ServerEntryPoint
+Info App: Disposing UserSyncManager
+Info App: Disposing LibrarySyncManager
+Info App: Disposing EntryPoint
+Info App: Disposing ExternalPortForwarding
+Info App: Disposing MigrationEntryPoint
+Info App: Disposing PluginStartup
+Info App: Disposing EntryPoint
+Info App: Disposing LoopUtilEntryPoint
+Info App: Disposing SyncNotificationEntryPoint
+Info App: Disposing ConnectEntryPoint
+Info App: Disposing NotificationManagerEntryPoint
+Info App: Disposing EncodingManagerEntryPoint
+Info App: Disposing ActivityLogEntryPoint
+Info App: Disposing RecordingNotifier
+Info App: Disposing EntryPoint
+Info App: Disposing ChannelsEntryPoint
+Info App: Disposing UserDataChangeNotifier
+Info App: Disposing SystemEvents
+Info App: Disposing StartupWizard
+Info App: Disposing ServerEventNotifier
+Info App: Disposing LogLibrariesEntryPoint
+Info App: Disposing LibraryChangedNotifier
+Info App: Disposing KeepServerAwake
+Info App: Disposing AutomaticRestartEntryPoint
+Info App: Disposing LibraryMonitorStartup
+Info App: Disposing DeviceAccessEntryPoint
+Info App: Disposing RemoteAddressEntryPoint
+Info App: Disposing PlaylistUpgradeEntryPoint
+Info App: Disposing UdpServerEntryPoint
+Info App: Disposing ActivityLogWebSocketListener
+Info App: Disposing SessionWebSocketListener
+Info App: Disposing ScheduledTasksWebSocketListener
+Info App: Disposing SessionInfoWebSocketListener
+Info App: Disposing SessionInfosWebSocketListener
+Info App: Disposing SessionEventsWebSocketListener
+Info App: Disposing DvdMounter
+Info App: Disposing BlurayMounter
+Info App: Disposing StrmMounter
+Info App: Disposing OpenSubtitleDownloader
+Info App: Disposing HauppaugeTunerWindows
+Info App: Disposing UIPagesManager
+Info App: Disposing EncodingManager
+Info App: Disposing ActivityRepository
+Info ActivityRepository: DisposeConnection
+Info ActivityRepository: Running pragma optimize on /Users/w3/.config/emby-server/data/activitylog.db
+Info ActivityRepository: Closing sqlite connection to /Users/w3/.config/emby-server/data/activitylog.db
+Info ActivityRepository: Closing sqlite connection to /Users/w3/.config/emby-server/data/activitylog.db
+Info ActivityRepository: Closing sqlite connection to /Users/w3/.config/emby-server/data/activitylog.db
+Info App: Disposing MediaEncoder
+Info App: Disposing SsdpDevicePublisher
+Info App: Disposing SsdpCommunicationsServer
+Info App: SsdpCommunicationsServer Disposing 5 sendSockets
+Info App: SsdpCommunicationsServer disposing sendSocket from 0.0.0.0:1900
+Info App: SsdpCommunicationsServer disposing sendSocket from 0.0.0.0:57743
+Info App: SsdpCommunicationsServer disposing sendSocket from 173.13.191.241:50999
+Info App: SsdpCommunicationsServer disposing sendSocket from 10.1.10.163:64545
+Info App: SsdpCommunicationsServer disposing sendSocket from 127.0.0.1:65513
+Info App: Disposing NotificationManager
+Info App: Disposing LiveTvManager
+Info App: Disposing SessionManager
+Info App: Disposing ProviderManager
+Info App: Disposing MediaSourceManager
+Info App: Disposing ImageProcessor
+Info App: Disposing ProcessManager
+Info App: Disposing HttpListenerHost
+Info Server: Stopping HttpListener...
+Info Server: HttpListener stopped
+Info App: Disposing LibraryMonitor
+Info LibraryMonitor: Stopping directory watching for path /Volumes/Drobo/Movies and TV Shows/_3DSBS Movies
+Info LibraryMonitor: Stopping directory watching for path /Volumes/Drobo/Movies and TV Shows/_Education
+Info LibraryMonitor: Stopping directory watching for path /Volumes/Drobo/Movies and TV Shows/_HomeMade/Elite Dangerous Tutorials
+Info LibraryMonitor: Stopping directory watching for path /Volumes/Drobo/Movies and TV Shows/_HomeMade/Tim, Dan, Zahna, Alan Mount
+Info LibraryMonitor: Stopping directory watching for path /Volumes/Drobo/Movies and TV Shows/_HomeMade/Tim's Homemade MP3's
+Info LibraryMonitor: Stopping directory watching for path /Volumes/Drobo/Movies and TV Shows/_HomeMade/Tim's Music
+Info LibraryMonitor: Stopping directory watching for path /Volumes/Drobo/Movies and TV Shows/_MOVIES
+Info LibraryMonitor: Stopping directory watching for path /Volumes/Drobo/Movies and TV Shows/_Music Videos
+Info LibraryMonitor: Stopping directory watching for path /Volumes/Drobo/Movies and TV Shows/_Oddballs
+Info LibraryMonitor: Stopping directory watching for path /Volumes/Drobo/Movies and TV Shows/_TV
+Info LibraryMonitor: Stopping directory watching for path /Volumes/Drobo/Plex Music folder
+Info LibraryMonitor: Stopping directory watching for path /Volumes/Drobo/Sexy
+Info LibraryMonitor: Stopping directory watching for path /Volumes/Drobo/SwingThing0/SWING THING for iTunes (64GB USB, complete)/SwingThing HD Library for iTunes
+Info App: Disposing AuthenticationRepository
+Info AuthenticationRepository: DisposeConnection
+Info AuthenticationRepository: Running pragma optimize on /Users/w3/.config/emby-server/data/authentication.db
+Info AuthenticationRepository: Closing sqlite connection to /Users/w3/.config/emby-server/data/authentication.db
+Info AuthenticationRepository: Closing sqlite connection to /Users/w3/.config/emby-server/data/authentication.db
+Info AuthenticationRepository: Closing sqlite connection to /Users/w3/.config/emby-server/data/authentication.db
+Info AuthenticationRepository: Closing sqlite connection to /Users/w3/.config/emby-server/data/authentication.db
+Info AuthenticationRepository: Closing sqlite connection to /Users/w3/.config/emby-server/data/authentication.db
+Info App: Disposing SqliteUserDataRepository
+Info SqliteUserDataRepository: DisposeConnection
+Info App: Disposing SqliteItemRepository
+Info SqliteItemRepository: DisposeConnection
+Info SqliteItemRepository: Running pragma optimize on /Users/w3/.config/emby-server/data/library.db
+Info SqliteItemRepository: Closing sqlite connection to /Users/w3/.config/emby-server/data/library.db
+Info SqliteItemRepository: Closing sqlite connection to /Users/w3/.config/emby-server/data/library.db
+Info SqliteItemRepository: Closing sqlite connection to /Users/w3/.config/emby-server/data/library.db
+Info SqliteItemRepository: Closing sqlite connection to /Users/w3/.config/emby-server/data/library.db
+Info SqliteItemRepository: Closing sqlite connection to /Users/w3/.config/emby-server/data/library.db
+Info SqliteItemRepository: Closing sqlite connection to /Users/w3/.config/emby-server/data/library.db
+Info SqliteItemRepository: Closing sqlite connection to /Users/w3/.config/emby-server/data/library.db
+Info SqliteItemRepository: Closing sqlite connection to /Users/w3/.config/emby-server/data/library.db
+Info SqliteItemRepository: Closing sqlite connection to /Users/w3/.config/emby-server/data/library.db
+Info SqliteItemRepository: Closing sqlite connection to /Users/w3/.config/emby-server/data/library.db
+Info SqliteItemRepository: Closing sqlite connection to /Users/w3/.config/emby-server/data/library.db
+Info SqliteItemRepository: Closing sqlite connection to /Users/w3/.config/emby-server/data/library.db
+Info SqliteItemRepository: Closing sqlite connection to /Users/w3/.config/emby-server/data/library.db
+Info SqliteItemRepository: Closing sqlite connection to /Users/w3/.config/emby-server/data/library.db
+Info App: Disposing SqliteUserRepository
+Info SqliteUserRepository: DisposeConnection
+Info SqliteUserRepository: Running pragma optimize on /Users/w3/.config/emby-server/data/users.db
+Info SqliteUserRepository: Closing sqlite connection to /Users/w3/.config/emby-server/data/users.db
+Info SqliteUserRepository: Closing sqlite connection to /Users/w3/.config/emby-server/data/users.db
+Info SqliteUserRepository: Closing sqlite connection to /Users/w3/.config/emby-server/data/users.db
+Info App: Disposing InstallationManager
+Info App: Disposing TaskManager
+Info App: Disposing MediaMountManager
+Info App: Dispose complete
+Info Main: Shutdown complete
+ * Serving Flask app 'app'
+ * Debug mode: off
+ * Serving Flask app 'app'
+ * Debug mode: off
