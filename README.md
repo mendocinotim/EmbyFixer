@@ -37,7 +37,7 @@ These issues often result in failed playback, transcoding errors, or suboptimal 
 - Emby Server installed on your system
 
 ### Installation Steps
-1. Download the DMG file from [GitHub Releases](https://github.com/mendocinotim/EmbyFixer/releases)
+1. Download the DMG file from [GitHub Releases](https://github.com/mendocinotim/EmbyFFMPEGFixer/releases)
 2. Mount the DMG by double-clicking it
 3. Drag the EmbyFFMPEGFixer app to your Applications folder
 4. Launch the app from Applications
@@ -101,7 +101,7 @@ Contributions to the EmbyFFMPEGFixer project are welcome:
 2. Create a feature branch
 3. Submit a pull request
 
-For bug reports or feature requests, please use the [Issues page](https://github.com/mendocinotim/EmbyFixer/issues).
+For bug reports or feature requests, please use the [Issues page](https://github.com/mendocinotim/EmbyFFMPEGFixer/issues).
 
 ## License
 

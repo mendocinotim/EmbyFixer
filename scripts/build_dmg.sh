@@ -97,19 +97,20 @@ fi
 
 # Create README file for DMG
 echo "Creating README..."
-cat > "$PROJECT_ROOT/dist/dmg/README.txt" << EOF
+if [ -f "$PROJECT_ROOT/scripts/README.txt" ]; then
+  cp "$PROJECT_ROOT/scripts/README.txt" "$PROJECT_ROOT/dist/dmg/README.txt"
+else
+  # Fallback if the file doesn't exist
+  cat > "$PROJECT_ROOT/dist/dmg/README.txt" << EOF
 Emby FFMPEG Fixer v1.0.2
 
 INSTALLATION:
 1. Drag the EmbyFFMPEGFixer app to the Applications folder.
 2. Launch from Applications.
 
-UNINSTALLATION:
-1. Run the uninstall.sh script in the Uninstaller folder.
-2. Follow prompts to restore original FFMPEG binaries and remove the application.
-
-For support, visit: https://github.com/yourusername/EmbyFFMPEGFixer
+For more information, visit: https://github.com/mendocinotim/EmbyFFMPEGFixer
 EOF
+fi
 
 # Create the DMG
 echo "Creating DMG..."
