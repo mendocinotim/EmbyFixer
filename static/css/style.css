@@ -142,33 +142,58 @@ header p.lead {
 }
 
 .log-entry {
+    position: relative;
+    padding: 8px 12px;
     margin-bottom: 8px;
-    border-bottom: 1px solid #eee;
-    padding-bottom: 8px;
-    animation: fadeIn 0.3s ease-in;
+    background-color: #fff;
+    border-radius: 4px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    transition: all 0.2s ease;
 }
 
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(-10px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-.log-header {
+.log-entry.has-substeps {
     cursor: pointer;
-    margin-bottom: 5px;
-    display: flex;
-    align-items: center;
 }
 
-.log-header.expanded .disclosure-triangle {
-    transform: rotate(90deg);
+.log-entry.has-substeps:hover {
+    background-color: #f8f9fa;
 }
 
-.disclosure-triangle {
-    display: inline-block;
-    transition: transform 0.2s;
-    margin-right: 5px;
+.log-entry .substeps {
+    display: none;
+    margin-top: 8px;
+    padding-left: 20px;
+    border-left: 2px solid #dee2e6;
+}
+
+.log-entry.expanded .substeps {
+    display: block;
+    animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.log-entry .disclosure-triangle {
+    position: absolute;
+    left: -5px;
+    top: 50%;
+    transform: translateY(-50%);
+    transition: transform 0.2s ease;
     color: #6c757d;
+    font-size: 12px;
+}
+
+.log-entry.expanded .disclosure-triangle {
+    transform: translateY(-50%) rotate(90deg);
 }
 
 .log-timestamp {
@@ -264,18 +289,48 @@ header p.lead {
 
 /* Button styling */
 .btn {
+    padding: 8px 16px;
     border-radius: 4px;
+    border: none;
     font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
 }
 
 .btn-primary {
-    background-color: #3498db;
-    border-color: #3498db;
+    background-color: #007bff;
+    color: white;
 }
 
-.btn-primary:hover {
-    background-color: #2980b9;
-    border-color: #2980b9;
+.btn-primary:hover:not(:disabled) {
+    background-color: #0056b3;
+}
+
+.btn-danger {
+    background-color: #dc3545;
+    color: #fff;
+    border: none;
+}
+
+.btn-danger:not(:disabled):not(.disabled) {
+    cursor: pointer;
+    opacity: 1;
+}
+
+.btn-danger:hover:not(:disabled):not(.disabled) {
+    background-color: #c82333;
+}
+
+.btn-danger.disabled,
+.btn-danger:disabled {
+    background-color: #dc3545;
+    opacity: 0.65;
+    cursor: not-allowed;
 }
 
 /* Alert styling */
@@ -379,4 +434,85 @@ footer {
 #emby-status-indicator.stopped {
     background-color: #dc3545;
     box-shadow: 0 0 8px #dc3545;
+}
+
+/* Progress bars */
+.progress-bars {
+    margin-top: 20px;
+    padding: 15px;
+    background-color: #fff;
+    border-radius: 4px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.progress-item {
+    margin-bottom: 15px;
+}
+
+.progress-item:last-child {
+    margin-bottom: 0;
+}
+
+.progress-label {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 5px;
+    font-weight: 500;
+    color: #495057;
+}
+
+.progress {
+    height: 8px;
+    background-color: #e9ecef;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.progress-bar {
+    height: 100%;
+    background-color: #007bff;
+    transition: width 0.3s ease;
+}
+
+.progress-bar.complete {
+    background-color: #28a745;
+}
+
+.progress-bar.error {
+    background-color: #dc3545;
+}
+
+.progress-bar.stalled {
+    background-color: #ffc107;
+}
+
+/* Process control buttons */
+#stop-process {
+    transition: all 0.3s ease;
+}
+
+#stop-process:not(:disabled):not(.disabled) {
+    animation: pulse-red 2s infinite;
+}
+
+#stop-process.disabled {
+    pointer-events: none;
+    opacity: 0.65;
+    cursor: not-allowed !important;
+}
+
+@keyframes pulse-red {
+    0% {
+        box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(220, 53, 69, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(220, 53, 69, 0);
+    }
+}
+
+.pulse-animation {
+    animation: pulse-red 2s infinite;
 }

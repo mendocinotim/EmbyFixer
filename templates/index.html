@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
+    <div id="initial-state" data-processing="{{ 'true' if is_processing else 'false' }}" style="display: none;"></div>
     <div class="container">
         <header>
             <h1>Emby FFMPEG Fixer</h1>
@@ -33,7 +34,10 @@
 
             <section class="step-container">
                 <h2>Step 2: Check FFMPEG Compatibility</h2>
-                <button id="check-compatibility" class="primary-button" disabled>Check Compatibility</button>
+                <div class="server-control-buttons">
+                    <button id="check-compatibility" class="btn btn-primary" disabled>Check Compatibility</button>
+                    <button id="stop-process" class="btn btn-danger disabled" disabled title="No process running" style="cursor: not-allowed; opacity: 0.65;">Stop Process</button>
+                </div>
                 
                 <div id="compatibility-results" class="results-table hidden">
                     <table>
@@ -89,8 +93,31 @@
                         <i class="view-icon">👁️</i> View Full Log
                     </button>
                 </div>
-                <div id="log-container" class="log-display">
-                    <div id="log-entries"></div>
+                <div id="log-container" class="log-container">
+                    <div id="log-entries" class="log-entries">
+                        <!-- Log entries will be added here -->
+                    </div>
+                    <div id="progress-bars" class="progress-bars">
+                        <!-- Progress bars for main steps -->
+                        <div class="progress-item" data-step="check-compatibility">
+                            <div class="progress-label">Check Compatibility</div>
+                            <div class="progress">
+                                <div class="progress-bar" role="progressbar" style="width: 0%"></div>
+                            </div>
+                        </div>
+                        <div class="progress-item" data-step="fix-compatibility">
+                            <div class="progress-label">Fix Compatibility</div>
+                            <div class="progress">
+                                <div class="progress-bar" role="progressbar" style="width: 0%"></div>
+                            </div>
+                        </div>
+                        <div class="progress-item" data-step="restore">
+                            <div class="progress-label">Restore Original</div>
+                            <div class="progress">
+                                <div class="progress-bar" role="progressbar" style="width: 0%"></div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </section>
         </main>

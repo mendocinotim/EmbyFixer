@@ -8,8 +8,11 @@ import subprocess
 import logging
 import psutil
 import signal
+import time
 from datetime import datetime
-from utils import (
+from core.process_manager import process_manager
+from core.state_manager import state_manager
+from core.utils import (
     get_system_architecture, 
     find_ffmpeg_binaries,
     get_ffmpeg_architecture,
@@ -18,8 +21,10 @@ from utils import (
     replace_ffmpeg_binaries,
     force_single_architecture,
     setup_logging,
-    get_test_mode_info,
-    is_test_mode_active
+    create_backup,
+    restore_from_backup,
+    force_architecture_incompatibility,
+    get_default_emby_path
 )
 
 # Global Configuration
@@ -30,7 +35,6 @@ CORS(app)  # Enable CORS for all routes
 app.config['EMBY_PATH'] = None  # Initialize EMBY_PATH config
 app.config['DEBUG'] = False  # Disable debug mode
 app.config['PROPAGATE_EXCEPTIONS'] = True  # Enable exception propagation
-app.config['MAIN_APP_RUNNING'] = False  # Track if main app is running
 
 # Configure logging
 setup_logging()
@@ -59,18 +63,31 @@ def is_port_in_use(port):
 @app.route('/')
 def index():
     """Show start page if main app is not running, otherwise redirect to main"""
-    if app.config['MAIN_APP_RUNNING']:
+    if state_manager.is_main_app_running():
         return redirect(url_for('main'))
     return render_template('start.html')
 
 @app.route('/main')
 def main():
     """Main application page"""
-    if not app.config['MAIN_APP_RUNNING']:
+    if not state_manager.is_main_app_running():
         return redirect(url_for('index'))
-    # Pre-populate the Emby Server path
-    default_path = '/Applications/EmbyServer.app'
-    return render_template('index.html', default_emby_path=default_path)
+    
+    # Get default Emby Server path
+    default_path = get_default_emby_path()
+    
+    # Create initial state backup if path exists
+    if default_path:
+        result = state_manager.create_initial_state_backup(default_path)
+        if not result["success"]:
+            logging.error(f"Failed to create initial state backup: {result['message']}")
+    
+    # Get current process state
+    process_state = process_manager.get_state()
+    
+    return render_template('index.html', 
+                         default_emby_path=default_path,
+                         is_processing=process_state["is_running"])
 
 @app.route('/api/start-application', methods=['POST'])
 def start_application():
@@ -83,11 +100,10 @@ def start_application():
             logging.info("Found existing Flask process, attempting to kill it")
             kill_existing_flask()
             # Give the process a moment to terminate
-            import time
             time.sleep(1)
         
         # Start the main application
-        app.config['MAIN_APP_RUNNING'] = True
+        state_manager.set_main_app_running(True)
         logging.info("Main application started successfully")
         
         return jsonify({
@@ -175,24 +191,38 @@ def check_compatibility():
 
 @app.route('/api/fix-ffmpeg', methods=['POST'])
 def fix_ffmpeg():
-    emby_path = request.json.get('path')
-    
-    if not emby_path or not os.path.exists(emby_path):
-        return jsonify({
-            'success': False,
-            'message': 'Invalid Emby Server path'
-        })
-    
-    # Get system architecture
-    system_arch = get_system_architecture()
-    
-    # Replace FFMPEG binaries
-    success, message = replace_ffmpeg_binaries(emby_path, system_arch)
-    
-    return jsonify({
-        'success': success,
-        'message': message
-    })
+    global CURRENT_PROCESS
+    try:
+        data = request.get_json()
+        emby_path = data.get('path')
+        
+        if not emby_path:
+            return jsonify({"success": False, "message": "No Emby Server path provided"})
+        
+        if not os.path.exists(emby_path):
+            return jsonify({"success": False, "message": "Emby Server path does not exist"})
+        
+        # Create backup if it doesn't exist
+        backup_result = create_backup(emby_path)
+        if not backup_result["success"]:
+            return jsonify(backup_result)
+        
+        # Fix FFMPEG compatibility
+        logging.info("Starting FFMPEG compatibility fix...")
+        result = fix_ffmpeg_compatibility(emby_path)
+        
+        if result["success"]:
+            logging.info("FFMPEG compatibility fix completed successfully")
+            return jsonify({"success": True, "message": "FFMPEG compatibility fixed successfully"})
+        else:
+            logging.error(f"FFMPEG compatibility fix failed: {result['message']}")
+            return jsonify(result)
+            
+    except Exception as e:
+        logging.error(f"Error fixing FFMPEG compatibility: {str(e)}")
+        return jsonify({"success": False, "message": f"Error fixing FFMPEG compatibility: {str(e)}"})
+    finally:
+        CURRENT_PROCESS = None
 
 @app.route('/api/restore-ffmpeg', methods=['POST'])
 def restore_ffmpeg():
@@ -426,6 +456,150 @@ def check_test_mode():
             'message': error_msg,
             'test_mode_active': False
         }), 500
+
+@app.route('/api/stop-process', methods=['POST'])
+def stop_process():
+    """Stop any running process, restore initial state, and reset application state"""
+    try:
+        # Get current Emby path
+        data = request.get_json()
+        emby_path = data.get('path')
+        
+        if not emby_path:
+            return jsonify({
+                "success": False,
+                "message": "No Emby Server path provided"
+            })
+        
+        # First stop any running process
+        if process_manager.stop_process():
+            # Then restore to initial state
+            restore_result = state_manager.restore_initial_state(emby_path)
+            if not restore_result["success"]:
+                logging.error(f"Failed to restore initial state: {restore_result['message']}")
+                return jsonify({
+                    "success": False,
+                    "message": f"Process stopped but failed to restore initial state: {restore_result['message']}"
+                })
+            
+            # Reset application state
+            state_manager.set_main_app_running(False)
+            logging.info("Process stopped and initial state restored")
+            
+            # Return success response with redirect
+            return jsonify({
+                "success": True,
+                "message": "Process stopped and initial state restored successfully",
+                "redirect": url_for('index')
+            })
+        else:
+            return jsonify({
+                "success": False,
+                "message": "No active process to stop"
+            })
+    except Exception as e:
+        error_msg = f"Error stopping process: {str(e)}"
+        logging.error(error_msg)
+        return jsonify({
+            "success": False,
+            "message": error_msg
+        }), 500
+
+@app.route('/api/get-default-path', methods=['GET'])
+def get_default_path():
+    """Get the default Emby Server path"""
+    try:
+        default_path = get_default_emby_path()
+        if default_path:
+            return jsonify({
+                'success': True,
+                'path': default_path
+            })
+        else:
+            return jsonify({
+                'success': False,
+                'message': 'No default Emby Server path found'
+            })
+    except Exception as e:
+        error_msg = f"Error getting default path: {str(e)}"
+        logging.error(error_msg)
+        return jsonify({
+            'success': False,
+            'message': error_msg
+        }), 500
+
+@app.route('/api/process-state', methods=['GET'])
+def get_process_state():
+    """Get the current process state"""
+    try:
+        process_state = process_manager.get_state()
+        return jsonify({
+            'success': True,
+            'is_processing': process_state["is_running"]
+        })
+    except Exception as e:
+        error_msg = f"Error getting process state: {str(e)}"
+        logging.error(error_msg)
+        return jsonify({
+            'success': False,
+            'message': error_msg,
+            'is_processing': False
+        }), 500
+
+@app.route('/api/browse-emby', methods=['GET'])
+def browse_emby():
+    """Open a native file dialog to select Emby Server application"""
+    try:
+        import tkinter as tk
+        from tkinter import filedialog
+        
+        # Create and hide the root window
+        root = tk.Tk()
+        root.withdraw()
+        
+        # Open file dialog
+        file_path = filedialog.askdirectory(
+            initialdir="/Applications",
+            title="Select Emby Server Application",
+            mustexist=True
+        )
+        
+        if file_path:
+            # Validate that it's an Emby Server application
+            if file_path.endswith('.app') and ('Emby' in file_path or 'emby' in file_path):
+                return jsonify({
+                    'success': True,
+                    'path': file_path
+                })
+            else:
+                return jsonify({
+                    'success': False,
+                    'message': 'Selected path is not an Emby Server application'
+                })
+        
+        return jsonify({
+            'success': False,
+            'message': 'No path selected'
+        })
+        
+    except Exception as e:
+        error_msg = f"Error browsing for Emby Server: {str(e)}"
+        logging.error(error_msg)
+        return jsonify({
+            'success': False,
+            'message': error_msg
+        }), 500
+
+def run_process(cmd, shell=False):
+    global CURRENT_PROCESS
+    try:
+        CURRENT_PROCESS = subprocess.Popen(cmd, shell=shell)
+        return_code = CURRENT_PROCESS.wait()
+        CURRENT_PROCESS = None
+        return return_code
+    except Exception as e:
+        CURRENT_PROCESS = None
+        raise e
 
 def main():
     """Main entry point for the application"""

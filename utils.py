@@ -5,6 +5,10 @@ import shutil
 import subprocess
 import logging
 from datetime import datetime
+from state import app_state
+
+# Global state
+INITIAL_STATE_BACKUP_DIR = None
 
 def setup_logging():
     """Configure logging for the application"""
@@ -36,25 +40,64 @@ def setup_logging():
         print(f"Error setting up logging: {e}")
         return False
 
-def get_resource_path(relative_path):
-    """Get absolute path to resource, works for dev and for PyInstaller"""
-    try:
-        # PyInstaller creates a temp folder and stores path in _MEIPASS
-        base_path = sys._MEIPASS
-    except Exception:
-        base_path = os.path.abspath(".")
-    
-    return os.path.join(base_path, relative_path)
-
 def get_system_architecture():
-    """Detect system architecture (x86_64 or arm64)"""
+    """Get the system architecture."""
     arch = platform.machine()
-    if arch == "x86_64" or arch == "AMD64" or arch == "i386":
-        return "x86_64"
-    elif arch == "arm64" or arch == "aarch64":
-        return "arm64"
+    if arch == 'x86_64':
+        return 'x86_64'
+    elif arch == 'arm64':
+        return 'arm64'
     else:
         return arch
+
+def get_default_emby_path():
+    """Get the default Emby Server installation path."""
+    default_paths = [
+        "/Applications/Emby Server.app",  # macOS
+        "C:\\Program Files\\Emby Server",  # Windows
+        "/opt/emby-server"  # Linux
+    ]
+    
+    for path in default_paths:
+        if os.path.exists(path):
+            return path
+    return None
+
+# Process management functions
+def run_process(cmd, shell=False):
+    return app_state.run_process(cmd, shell)
+
+def stop_current_process():
+    return app_state.stop_process()
+
+def is_process_running():
+    return app_state.is_running
+
+def get_process_state():
+    return app_state.get_state()
+
+def initialize_process_state():
+    app_state.initialize()
+
+def get_ffmpeg_paths(emby_path):
+    """Get paths to FFMPEG binaries."""
+    try:
+        ffmpeg_path = find_ffmpeg_binaries(emby_path)
+        if not ffmpeg_path:
+            return {"success": False, "message": "FFMPEG binaries not found"}
+        
+        paths = {}
+        for binary in ["ffmpeg", "ffprobe", "ffdetect"]:
+            path = os.path.join(ffmpeg_path, binary)
+            if not os.path.exists(path):
+                return {"success": False, "message": f"{binary} not found"}
+            paths[binary] = path
+        
+        return {"success": True, "paths": paths}
+        
+    except Exception as e:
+        logging.error(f"Error getting FFMPEG paths: {str(e)}")
+        return {"success": False, "message": f"Error getting FFMPEG paths: {str(e)}"}
 
 def find_ffmpeg_binaries(emby_path):
     """Find the FFMPEG binaries in the Emby Server installation"""
@@ -440,3 +483,216 @@ def get_test_mode_info(ffmpeg_path):
         return None
     except Exception:
         return None
+
+def fix_ffmpeg_compatibility(emby_path):
+    """Fix FFMPEG compatibility by replacing binaries with correct architecture."""
+    try:
+        system_arch = get_system_architecture()
+        logger.info(f"System architecture: {system_arch}")
+        
+        # Get paths to FFMPEG binaries
+        ffmpeg_paths = get_ffmpeg_paths(emby_path)
+        if not ffmpeg_paths["success"]:
+            return ffmpeg_paths
+        
+        # Create backup if it doesn't exist
+        backup_result = create_backup(emby_path)
+        if not backup_result["success"]:
+            return backup_result
+        
+        # Replace binaries
+        for binary_name, path in ffmpeg_paths["paths"].items():
+            logger.info(f"Replacing {binary_name}...")
+            
+            # Get correct binary for system architecture
+            new_binary = get_compatible_binary(binary_name, system_arch)
+            if not new_binary["success"]:
+                return new_binary
+            
+            # Copy new binary
+            try:
+                shutil.copy2(new_binary["path"], path)
+                os.chmod(path, 0o755)  # Make executable
+                logger.info(f"Successfully replaced {binary_name}")
+            except Exception as e:
+                logger.error(f"Error replacing {binary_name}: {str(e)}")
+                return {"success": False, "message": f"Error replacing {binary_name}: {str(e)}"}
+        
+        return {"success": True, "message": "FFMPEG binaries replaced successfully"}
+        
+    except Exception as e:
+        logger.error(f"Error fixing FFMPEG compatibility: {str(e)}")
+        return {"success": False, "message": f"Error fixing FFMPEG compatibility: {str(e)}"}
+
+def create_backup(emby_path):
+    """Create backup of FFMPEG binaries if it doesn't exist."""
+    try:
+        backup_dir = os.path.join(os.path.dirname(emby_path), "ffmpeg_backup")
+        if os.path.exists(backup_dir):
+            logger.info("Backup already exists")
+            return {"success": True, "message": "Backup already exists"}
+        
+        # Get paths to FFMPEG binaries
+        ffmpeg_paths = get_ffmpeg_paths(emby_path)
+        if not ffmpeg_paths["success"]:
+            return ffmpeg_paths
+        
+        # Create backup directory
+        os.makedirs(backup_dir)
+        
+        # Copy binaries to backup
+        for binary_name, path in ffmpeg_paths["paths"].items():
+            backup_path = os.path.join(backup_dir, os.path.basename(path))
+            try:
+                shutil.copy2(path, backup_path)
+                logger.info(f"Successfully backed up {binary_name}")
+            except Exception as e:
+                logger.error(f"Error backing up {binary_name}: {str(e)}")
+                # Clean up failed backup
+                shutil.rmtree(backup_dir, ignore_errors=True)
+                return {"success": False, "message": f"Error backing up {binary_name}: {str(e)}"}
+        
+        return {"success": True, "message": "Backup created successfully"}
+        
+    except Exception as e:
+        logger.error(f"Error creating backup: {str(e)}")
+        return {"success": False, "message": f"Error creating backup: {str(e)}"}
+
+def restore_from_backup(emby_path):
+    """Restore FFMPEG binaries from backup."""
+    try:
+        backup_dir = os.path.join(os.path.dirname(emby_path), "ffmpeg_backup")
+        if not os.path.exists(backup_dir):
+            return {"success": False, "message": "No backup found"}
+        
+        # Get paths to FFMPEG binaries
+        ffmpeg_paths = get_ffmpeg_paths(emby_path)
+        if not ffmpeg_paths["success"]:
+            return ffmpeg_paths
+        
+        # Restore binaries from backup
+        for binary_name, path in ffmpeg_paths["paths"].items():
+            backup_path = os.path.join(backup_dir, os.path.basename(path))
+            if not os.path.exists(backup_path):
+                return {"success": False, "message": f"Backup for {binary_name} not found"}
+            
+            try:
+                shutil.copy2(backup_path, path)
+                os.chmod(path, 0o755)  # Make executable
+                logger.info(f"Successfully restored {binary_name}")
+            except Exception as e:
+                logger.error(f"Error restoring {binary_name}: {str(e)}")
+                return {"success": False, "message": f"Error restoring {binary_name}: {str(e)}"}
+        
+        return {"success": True, "message": "FFMPEG binaries restored successfully"}
+        
+    except Exception as e:
+        logger.error(f"Error restoring from backup: {str(e)}")
+        return {"success": False, "message": f"Error restoring from backup: {str(e)}"}
+
+def force_architecture_incompatibility(emby_path, target_arch):
+    """Force FFMPEG binaries to be incompatible by using wrong architecture."""
+    try:
+        # Create backup if it doesn't exist
+        backup_result = create_backup(emby_path)
+        if not backup_result["success"]:
+            return backup_result
+        
+        # Get paths to FFMPEG binaries
+        ffmpeg_paths = get_ffmpeg_paths(emby_path)
+        if not ffmpeg_paths["success"]:
+            return ffmpeg_paths
+        
+        # Replace binaries with target architecture
+        for binary_name, path in ffmpeg_paths["paths"].items():
+            logger.info(f"Replacing {binary_name} with {target_arch} version...")
+            
+            # Get binary for target architecture
+            new_binary = get_compatible_binary(binary_name, target_arch)
+            if not new_binary["success"]:
+                return new_binary
+            
+            try:
+                shutil.copy2(new_binary["path"], path)
+                os.chmod(path, 0o755)  # Make executable
+                logger.info(f"Successfully replaced {binary_name}")
+            except Exception as e:
+                logger.error(f"Error replacing {binary_name}: {str(e)}")
+                return {"success": False, "message": f"Error replacing {binary_name}: {str(e)}"}
+        
+        return {"success": True, "message": f"FFMPEG binaries replaced with {target_arch} version"}
+        
+    except Exception as e:
+        logger.error(f"Error forcing architecture incompatibility: {str(e)}")
+        return {"success": False, "message": f"Error forcing architecture incompatibility: {str(e)}"}
+
+def create_initial_state_backup(emby_path):
+    """Create a backup of the initial FFMPEG state when the main page loads."""
+    global INITIAL_STATE_BACKUP_DIR
+    try:
+        # Create a unique backup directory for this session
+        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+        backup_dir = os.path.join(os.path.dirname(emby_path), f"ffmpeg_initial_state_{timestamp}")
+        
+        # Get paths to FFMPEG binaries
+        ffmpeg_paths = get_ffmpeg_paths(emby_path)
+        if not ffmpeg_paths["success"]:
+            return ffmpeg_paths
+        
+        # Create backup directory
+        os.makedirs(backup_dir)
+        
+        # Copy binaries to backup
+        for binary_name, path in ffmpeg_paths["paths"].items():
+            backup_path = os.path.join(backup_dir, os.path.basename(path))
+            try:
+                shutil.copy2(path, backup_path)
+                logging.info(f"Successfully backed up initial state of {binary_name}")
+            except Exception as e:
+                logging.error(f"Error backing up initial state of {binary_name}: {str(e)}")
+                # Clean up failed backup
+                shutil.rmtree(backup_dir, ignore_errors=True)
+                return {"success": False, "message": f"Error backing up initial state of {binary_name}: {str(e)}"}
+        
+        INITIAL_STATE_BACKUP_DIR = backup_dir
+        return {"success": True, "message": "Initial state backup created successfully"}
+        
+    except Exception as e:
+        logging.error(f"Error creating initial state backup: {str(e)}")
+        return {"success": False, "message": f"Error creating initial state backup: {str(e)}"}
+
+def restore_initial_state(emby_path):
+    """Restore FFMPEG binaries to their initial state from when the main page was loaded."""
+    global INITIAL_STATE_BACKUP_DIR
+    try:
+        if not INITIAL_STATE_BACKUP_DIR or not os.path.exists(INITIAL_STATE_BACKUP_DIR):
+            return {"success": False, "message": "No initial state backup found"}
+        
+        # Get paths to FFMPEG binaries
+        ffmpeg_paths = get_ffmpeg_paths(emby_path)
+        if not ffmpeg_paths["success"]:
+            return ffmpeg_paths
+        
+        # Restore binaries from initial state backup
+        for binary_name, path in ffmpeg_paths["paths"].items():
+            backup_path = os.path.join(INITIAL_STATE_BACKUP_DIR, os.path.basename(path))
+            if not os.path.exists(backup_path):
+                return {"success": False, "message": f"Initial state backup for {binary_name} not found"}
+            
+            try:
+                shutil.copy2(backup_path, path)
+                os.chmod(path, 0o755)  # Make executable
+                logging.info(f"Successfully restored {binary_name} to initial state")
+            except Exception as e:
+                logging.error(f"Error restoring {binary_name} to initial state: {str(e)}")
+                return {"success": False, "message": f"Error restoring {binary_name} to initial state: {str(e)}"}
+        
+        # Clean up initial state backup
+        shutil.rmtree(INITIAL_STATE_BACKUP_DIR, ignore_errors=True)
+        INITIAL_STATE_BACKUP_DIR = None
+        
+        return {"success": True, "message": "FFMPEG binaries restored to initial state successfully"}
+        
+    except Exception as e:
+        logging.error(f"Error restoring initial state: {str(e)}")
+        return {"success": False, "message": f"Error restoring initial state: {str(e)}"}
