@@ -22,14 +22,9 @@
             <section class="step-container">
                 <h2>Step 1: Select Emby Server Application</h2>
                 <div class="input-group">
-                    <button id="browse-button" class="primary-button">
-                        <i class="folder-icon">📁</i> Browse for Emby Server
-                    </button>
-                    <p>- OR -</p>
-                    <div class="path-input">
-                        <input type="text" id="emby-path" placeholder="/Applications/EmbyServer.app">
-                        <button id="use-path-button" class="secondary-button">Use This Path</button>
-                    </div>
+                    <input type="text" id="embyPath" class="form-control" value="{{ default_emby_path or '' }}" placeholder="/Applications/EmbyServer.app">
+                    <button id="browseEmby" class="btn btn-secondary">Browse for Emby Server</button>
+                    <button id="useThisPath" class="btn btn-primary">Use This Path</button>
                 </div>
                 <div id="selected-path-container" class="path-display">
                     <p><strong>Selected Path:</strong> <span id="selected-path">None</span></p>
@@ -38,7 +33,7 @@
 
             <section class="step-container">
                 <h2>Step 2: Check FFMPEG Compatibility</h2>
-                <button id="check-compatibility-button" class="primary-button" disabled>Check Compatibility</button>
+                <button id="check-compatibility" class="primary-button" disabled>Check Compatibility</button>
                 
                 <div id="compatibility-results" class="results-table hidden">
                     <table>
@@ -61,7 +56,7 @@
             <section id="fix-section" class="step-container hidden">
                 <h2>Step 3: Fix FFMPEG Compatibility</h2>
                 <p>Your Emby Server's FFMPEG binaries need to be replaced with the correct architecture.</p>
-                <button id="fix-button" class="primary-button">Fix FFMPEG Compatibility</button>
+                <button id="fix-compatibility" class="primary-button">Fix FFMPEG Compatibility</button>
                 <div id="fix-status" class="status-message hidden"></div>
             </section>
 
@@ -72,6 +67,16 @@
                 <div id="backup-status" class="status-message hidden"></div>
                 <button id="restore-button" class="primary-button hidden">Restore Original FFMPEG</button>
                 <div id="restore-status" class="status-message hidden"></div>
+            </section>
+
+            <section id="test-mode-section" class="step-container">
+                <h2>Test Mode</h2>
+                <p>For testing purposes only: Force FFMPEG binaries to be single-architecture.</p>
+                <div class="button-group">
+                    <button id="force-x86-button" class="secondary-button">Force x86_64</button>
+                    <button id="force-arm-button" class="secondary-button">Force ARM64</button>
+                </div>
+                <div id="test-mode-status" class="status-message hidden"></div>
             </section>
 
             <section class="step-container">

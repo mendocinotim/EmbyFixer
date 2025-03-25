@@ -130,15 +130,27 @@ header p.lead {
     border: 1px solid #dee2e6;
     border-radius: 4px;
     font-family: monospace;
-    max-height: 400px;
+    height: 300px;  /* Fixed height */
     overflow-y: auto;
     padding: 15px;
+    margin-top: 15px;
+}
+
+.log-entries {
+    display: flex;
+    flex-direction: column;
 }
 
 .log-entry {
     margin-bottom: 8px;
     border-bottom: 1px solid #eee;
     padding-bottom: 8px;
+    animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
 .log-header {
@@ -162,6 +174,7 @@ header p.lead {
 .log-timestamp {
     color: #6c757d;
     margin-right: 8px;
+    font-size: 0.9em;
 }
 
 .log-step {
@@ -175,7 +188,6 @@ header p.lead {
     border-radius: 3px;
     font-size: 0.9em;
     font-weight: bold;
-    margin-left: 5px;
 }
 
 .log-status.complete {
@@ -188,14 +200,14 @@ header p.lead {
     color: #004085;
 }
 
-.log-status.waiting {
-    background-color: #fff3cd;
-    color: #856404;
-}
-
-.log-status.failed {
+.log-status.error {
     background-color: #f8d7da;
     color: #721c24;
+}
+
+.log-status.info {
+    background-color: #e2e3e5;
+    color: #383d41;
 }
 
 .log-details {
@@ -306,22 +318,56 @@ footer {
 }
 
 /* Modal styling */
+.modal {
+    display: flex;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    justify-content: center;
+    align-items: center;
+}
+
 .modal-content {
-    border: none;
+    background-color: #fefefe;
+    padding: 20px;
     border-radius: 8px;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    width: 80%;
+    max-width: 800px;
+    max-height: 80vh;
+    position: relative;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-.modal-header {
-    border-bottom: 1px solid #eee;
-    background-color: #f8f9fa;
-    border-top-left-radius: 8px;
-    border-top-right-radius: 8px;
+.close-button {
+    position: absolute;
+    right: 20px;
+    top: 10px;
+    font-size: 24px;
+    font-weight: bold;
+    cursor: pointer;
+    color: #666;
 }
 
-.modal-footer {
-    border-top: 1px solid #eee;
+.close-button:hover {
+    color: #000;
+}
+
+.full-log {
     background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    padding: 15px;
+    font-family: monospace;
+    font-size: 13px;
+    line-height: 1.5;
+    white-space: pre-wrap;
+    overflow-y: auto;
+    max-height: calc(80vh - 100px);
+    margin-top: 15px;
 }
 
 /* Make sure status indicators respond properly */

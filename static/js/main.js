@@ -1,16 +1,16 @@
 document.addEventListener('DOMContentLoaded', function() {
     // DOM elements
-    const embyPathInput = document.getElementById('emby-path');
-    const browseButton = document.getElementById('browse-button');
-    const usePathButton = document.getElementById('use-path-button');
-    const selectedPathElement = document.getElementById('selected-path');
-    const checkCompatibilityButton = document.getElementById('check-compatibility-button');
+    const embyPathInput = document.getElementById('embyPath');
+    const browseButton = document.getElementById('browseEmby');
+    const usePathButton = document.getElementById('useThisPath');
+    const selectedPathDisplay = document.getElementById('selected-path');
+    const checkCompatibilityButton = document.getElementById('check-compatibility');
     const compatibilityResults = document.getElementById('compatibility-results');
     const systemArchitectureElement = document.getElementById('system-architecture');
     const ffmpegArchitectureElement = document.getElementById('ffmpeg-architecture');
     const compatibilityStatusElement = document.getElementById('compatibility-status');
     const fixSection = document.getElementById('fix-section');
-    const fixButton = document.getElementById('fix-button');
+    const fixButton = document.getElementById('fix-compatibility');
     const fixStatusElement = document.getElementById('fix-status');
     const restoreSection = document.getElementById('restore-section');
     const checkBackupButton = document.getElementById('check-backup-button');
@@ -26,10 +26,32 @@ document.addEventListener('DOMContentLoaded', function() {
     let selectedEmbyPath = '';
     let isCompatible = false;
 
+    function initializeApp() {
+        const currentDate = new Date().toISOString().substring(0, 10);
+        const currentTime = new Date().toTimeString().substring(0, 8);
+        addLogEntry(`${currentDate} ${currentTime} Initialization`, 'complete');
+
+        // If there's a pre-populated path, trigger the path selection
+        if (embyPathInput && embyPathInput.value) {
+            selectedEmbyPath = embyPathInput.value;
+            updateSelectedPath(embyPathInput.value);
+            addLogEntry('Found pre-populated Emby Server path', 'active');
+            selectEmbyPath(embyPathInput.value)
+                .then(() => {
+                    addLogEntry('Successfully validated pre-populated path', 'complete');
+                    // Automatically check compatibility after path is validated
+                    checkCompatibility();
+                })
+                .catch(error => {
+                    addLogEntry(`Error validating pre-populated path: ${error.message}`, 'error');
+                });
+        }
+    }
+
     // Functions
     function updateSelectedPath(path) {
         selectedEmbyPath = path;
-        selectedPathElement.textContent = path;
+        selectedPathDisplay.textContent = path;
         checkCompatibilityButton.disabled = false;
         checkBackupButton.disabled = false;
         
@@ -42,29 +64,30 @@ document.addEventListener('DOMContentLoaded', function() {
         restoreStatusElement.classList.add('hidden');
     }
 
-    function selectEmbyPath(path) {
-        fetch('/api/select-emby', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ path: path })
-        })
-        .then(response => response.json())
-        .then(data => {
+    async function selectEmbyPath(path) {
+        try {
+            const response = await fetch('/api/select-emby', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ path: path })
+            });
+            
+            const data = await response.json();
+            
             if (data.success) {
                 updateSelectedPath(data.path);
                 addLogEntry(`Selected Emby Server path: ${data.path}`);
+                return data;
             } else {
-                alert(data.message);
-                addLogEntry(`Error selecting path: ${data.message}`, 'error');
+                throw new Error(data.message);
             }
-        })
-        .catch(error => {
+        } catch (error) {
             console.error('Error:', error);
-            alert('An error occurred while selecting the Emby Server path');
-            addLogEntry(`Error: ${error.message}`, 'error');
-        });
+            addLogEntry(`Error selecting path: ${error.message}`, 'error');
+            throw error;
+        }
     }
 
     function checkCompatibility() {
@@ -109,12 +132,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 isCompatible = data.is_compatible;
                 if (isCompatible) {
                     compatibilityStatusElement.textContent = 'Compatible ✓';
-                    compatibilityStatusElement.className = 'compatible';
+                    compatibilityStatusElement.style.color = '#28a745';  // Green
                     fixSection.classList.add('hidden');
                 } else {
                     compatibilityStatusElement.textContent = 'Incompatible ✗';
-                    compatibilityStatusElement.className = 'incompatible';
+                    compatibilityStatusElement.style.color = '#dc3545';  // Red
                     fixSection.classList.remove('hidden');
+                    // Add a warning log entry
+                    addLogEntry('⚠️ FFMPEG binaries are incompatible with your system architecture', 'error');
                 }
                 
                 compatibilityResults.classList.remove('hidden');
@@ -281,10 +306,42 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function viewFullLog() {
-        fetch('/api/get-logs')
-        .then(response => response.json())
+        addLogEntry('Fetching full log...', 'active');
+        
+        fetch('/api/get-logs', {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            credentials: 'same-origin'
+        })
+        .then(response => {
+            if (!response.ok) {
+                console.error('Response not OK:', response.status, response.statusText);
+                if (response.status === 404) {
+                    throw new Error('Log file not found');
+                } else if (response.status === 500) {
+                    throw new Error('Server error while reading logs');
+                } else {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+            }
+            return response.json().catch(error => {
+                console.error('JSON parse error:', error);
+                throw new Error('Failed to parse server response');
+            });
+        })
         .then(data => {
+            if (!data) {
+                throw new Error('No data received from server');
+            }
+            
             if (data.success) {
+                if (!data.logs) {
+                    throw new Error('Log data is empty');
+                }
+                
                 // Create modal to display full log
                 const modal = document.createElement('div');
                 modal.className = 'modal';
@@ -304,12 +361,26 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 const logText = document.createElement('pre');
                 logText.className = 'full-log';
-                logText.textContent = data.logs;
+                
+                try {
+                    // Split logs into lines and reverse them
+                    const logLines = data.logs.split('\n').reverse();
+                    logText.textContent = logLines.join('\n');
+                } catch (error) {
+                    console.error('Error processing log data:', error);
+                    throw new Error('Error processing log data');
+                }
                 
                 modalContent.appendChild(closeButton);
                 modalContent.appendChild(heading);
                 modalContent.appendChild(logText);
                 modal.appendChild(modalContent);
+                
+                // Remove any existing modals
+                const existingModal = document.querySelector('.modal');
+                if (existingModal) {
+                    document.body.removeChild(existingModal);
+                }
                 
                 document.body.appendChild(modal);
                 
@@ -319,13 +390,68 @@ document.addEventListener('DOMContentLoaded', function() {
                         document.body.removeChild(modal);
                     }
                 };
+                
+                addLogEntry('Successfully loaded full log', 'complete');
             } else {
-                alert(data.message);
+                throw new Error(data.message || 'Failed to load logs');
             }
         })
         .catch(error => {
             console.error('Error:', error);
-            alert('An error occurred while retrieving logs');
+            addLogEntry(`Error loading logs: ${error.message}`, 'error');
+            
+            // Show error in a modal instead of an alert
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            
+            const modalContent = document.createElement('div');
+            modalContent.className = 'modal-content';
+            
+            const closeButton = document.createElement('span');
+            closeButton.className = 'close-button';
+            closeButton.textContent = '×';
+            closeButton.onclick = () => {
+                document.body.removeChild(modal);
+            };
+            
+            const heading = document.createElement('h2');
+            heading.textContent = 'Error Loading Logs';
+            heading.style.color = '#dc3545';
+            
+            const errorMessage = document.createElement('p');
+            errorMessage.textContent = error.message;
+            errorMessage.style.color = '#721c24';
+            errorMessage.style.backgroundColor = '#f8d7da';
+            errorMessage.style.padding = '10px';
+            errorMessage.style.borderRadius = '4px';
+            
+            const debugInfo = document.createElement('pre');
+            debugInfo.textContent = `Time: ${new Date().toISOString()}\nError: ${error.stack || error.message}`;
+            debugInfo.style.fontSize = '12px';
+            debugInfo.style.marginTop = '10px';
+            debugInfo.style.padding = '10px';
+            debugInfo.style.backgroundColor = '#f8f9fa';
+            
+            modalContent.appendChild(closeButton);
+            modalContent.appendChild(heading);
+            modalContent.appendChild(errorMessage);
+            modalContent.appendChild(debugInfo);
+            modal.appendChild(modalContent);
+            
+            // Remove any existing modals
+            const existingModal = document.querySelector('.modal');
+            if (existingModal) {
+                document.body.removeChild(existingModal);
+            }
+            
+            document.body.appendChild(modal);
+            
+            // Close modal when clicking outside
+            window.onclick = (event) => {
+                if (event.target === modal) {
+                    document.body.removeChild(modal);
+                }
+            };
         });
     }
 
@@ -356,10 +482,59 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         logEntry.innerHTML = `<span class="log-timestamp">${timestamp}</span> <span class="log-status ${statusClass}">${statusIcon}${message}</span>`;
-        logEntries.appendChild(logEntry);
+        logEntries.insertBefore(logEntry, logEntries.firstChild);
+    }
+
+    function forceArchitecture(arch) {
+        if (!selectedEmbyPath) {
+            alert('Please select Emby Server path first');
+            return;
+        }
+
+        if (!confirm(`Are you sure you want to force ${arch} architecture? This is for testing purposes only.`)) {
+            return;
+        }
+
+        addLogEntry(`Forcing ${arch} architecture for testing...`, 'active');
         
-        // Scroll to bottom
-        logContainer.scrollTop = logContainer.scrollHeight;
+        fetch('/api/force-test-mode', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ 
+                path: selectedEmbyPath,
+                architecture: arch
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            const statusElement = document.getElementById('test-mode-status');
+            if (data.success) {
+                statusElement.textContent = '✅ ' + data.message;
+                statusElement.className = 'status-message success';
+                addLogEntry(`Forcing ${arch} architecture...`, 'complete');
+                addLogEntry(data.message);
+                
+                // After forcing architecture, re-check compatibility
+                setTimeout(checkCompatibility, 1000);
+            } else {
+                statusElement.textContent = '❌ ' + data.message;
+                statusElement.className = 'status-message error';
+                addLogEntry(`Forcing ${arch} architecture...`, 'error');
+                addLogEntry(data.message, 'error');
+            }
+            
+            statusElement.classList.remove('hidden');
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            const statusElement = document.getElementById('test-mode-status');
+            statusElement.textContent = '❌ An error occurred while forcing architecture';
+            statusElement.className = 'status-message error';
+            statusElement.classList.remove('hidden');
+            addLogEntry(`Error: ${error.message}`, 'error');
+        });
     }
 
     // Event listeners
@@ -368,14 +543,30 @@ document.addEventListener('DOMContentLoaded', function() {
         const path = prompt('Enter the path to your Emby Server application:', '/Applications/EmbyServer.app');
         if (path) {
             embyPathInput.value = path;
-            selectEmbyPath(path);
+            selectEmbyPath(path)
+                .then(() => {
+                    addLogEntry('Successfully validated entered path', 'complete');
+                    // Automatically check compatibility after path is validated
+                    checkCompatibility();
+                })
+                .catch(error => {
+                    alert(error.message);
+                });
         }
     });
 
     usePathButton.addEventListener('click', function() {
         const path = embyPathInput.value.trim();
         if (path) {
-            selectEmbyPath(path);
+            selectEmbyPath(path)
+                .then(() => {
+                    addLogEntry('Successfully validated entered path', 'complete');
+                    // Automatically check compatibility after path is validated
+                    checkCompatibility();
+                })
+                .catch(error => {
+                    alert(error.message);
+                });
         } else {
             alert('Please enter a valid path');
         }
@@ -388,8 +579,9 @@ document.addEventListener('DOMContentLoaded', function() {
     downloadLogButton.addEventListener('click', downloadLog);
     viewLogButton.addEventListener('click', viewFullLog);
 
-    // Initialize with a log entry
-    const currentDate = new Date().toISOString().substring(0, 10);
-    const currentTime = new Date().toTimeString().substring(0, 8);
-    addLogEntry(`${currentDate} ${currentTime} Initialization`, 'complete');
+    document.getElementById('force-x86-button').addEventListener('click', () => forceArchitecture('x86_64'));
+    document.getElementById('force-arm-button').addEventListener('click', () => forceArchitecture('arm64'));
+
+    // Initialize the application
+    initializeApp();
 });

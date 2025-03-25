@@ -1,0 +1,32 @@
+# Python virtual environment
+EmbyFixer/
+venv/
+env/
+
+# Python cache files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Logs
+logs/
+*.log
+
+# macOS system files
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# IDE files
+.vscode/
+.idea/
+
+# Distribution / packaging
+dist/
+build/
+*.egg-info/
+
+# Test cache
+.pytest_cache/
+.coverage
+htmlcov/ 
