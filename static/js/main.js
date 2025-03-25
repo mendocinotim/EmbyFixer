@@ -29,6 +29,8 @@ document.addEventListener('DOMContentLoaded', function() {
     let currentStep = null;
     let isProcessing = false;
 
+    let serverList;
+
     // Event Listeners
     if (stopProcessButton) {
         stopProcessButton.addEventListener('click', function() {
@@ -45,6 +47,10 @@ document.addEventListener('DOMContentLoaded', function() {
         stopProcessButton.style.opacity = '0.65';
     }
     
+    // Enable buttons that should be active on load
+    browseButton.disabled = false;
+    usePathButton.disabled = false;
+
     // Initialize the application
     initializeApp();
 
@@ -85,22 +91,20 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log('Setting processing state:', processing); // Debug log
         isProcessing = processing;
         
-        // Update button states
+        // Update stop button state
         if (stopProcessButton) {
             stopProcessButton.disabled = !processing;
+            stopProcessButton.classList.toggle('disabled', !processing);
+            stopProcessButton.style.cursor = processing ? 'pointer' : 'not-allowed';
+            stopProcessButton.style.opacity = processing ? '1' : '0.65';
+            stopProcessButton.title = processing ? 'Stop current process' : 'No process running';
             
             if (processing) {
-                console.log('Enabling stop button'); // Debug log
-                stopProcessButton.classList.remove('disabled');
-                stopProcessButton.setAttribute('title', 'Stop current process');
-                stopProcessButton.style.removeProperty('cursor');
-                stopProcessButton.style.removeProperty('opacity');
-                stopProcessButton.classList.add('pulse-animation');
+                stopProcessButton.classList.add('active');
+                console.log('Stop button activated'); // Debug log
             } else {
-                console.log('Disabling stop button'); // Debug log
-                stopProcessButton.classList.add('disabled');
-                stopProcessButton.setAttribute('title', 'No process running');
-                stopProcessButton.classList.remove('pulse-animation');
+                stopProcessButton.classList.remove('active');
+                console.log('Stop button deactivated'); // Debug log
             }
         }
         
@@ -120,6 +124,14 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!isProcessing) return;
 
         const mainEntryId = addLogEntry('Stopping process...', 'active');
+        setProcessing(true); // Keep processing state while stopping
+        
+        // Disable all buttons while stopping
+        if (checkCompatibilityButton) checkCompatibilityButton.disabled = true;
+        if (fixButton) fixButton.disabled = true;
+        if (restoreButton) restoreButton.disabled = true;
+        if (checkBackupButton) checkBackupButton.disabled = true;
+        if (stopProcessButton) stopProcessButton.disabled = true;
         
         fetch('/api/stop-process', {
             method: 'POST',
@@ -127,40 +139,48 @@ document.addEventListener('DOMContentLoaded', function() {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                path: selectedEmbyPath
+                path: embyPathInput.value.trim()
             })
         })
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
         .then(data => {
             if (data.success) {
-                addLogEntry('Process stopped by user', 'complete', true, mainEntryId);
+                addLogEntry('Process stopped successfully', 'complete', true, mainEntryId);
                 addLogEntry('Restoring to initial state...', 'active', true, mainEntryId);
-                setProcessing(false);
+                
                 // Reset all progress bars
                 resetProgress();
+                
                 // Update current step's progress to stopped state
                 if (currentStep) {
                     updateProgress(currentStep, 100, 'error');
                 }
-                // Clear results and reset UI
-                compatibilityResults.classList.add('hidden');
-                fixSection.classList.add('hidden');
-                restoreSection.classList.add('hidden');
                 
-                // Handle redirect
-                if (data.redirect) {
-                    addLogEntry('Initial state restored, redirecting to start page...', 'complete', true, mainEntryId);
-                    setTimeout(() => {
-                        window.location.href = data.redirect;
-                    }, 1000);
-                }
+                // Clear results and reset UI
+                if (compatibilityResults) compatibilityResults.classList.add('hidden');
+                if (fixSection) fixSection.classList.add('hidden');
+                if (restoreSection) restoreSection.classList.add('hidden');
+                
+                addLogEntry('Initial state restored, redirecting to start page...', 'complete', true, mainEntryId);
+                
+                // Handle redirect after a short delay
+                setTimeout(() => {
+                    window.location.href = data.redirect;
+                }, 1000);
             } else {
-                addLogEntry(`Failed to stop process: ${data.message}`, 'error', true, mainEntryId);
+                throw new Error(data.message || 'Failed to stop process');
             }
         })
         .catch(error => {
             console.error('Error:', error);
-            addLogEntry(`Error stopping process: ${error.message}`, 'error', true, mainEntryId);
+            addLogEntry(`Failed to stop process: ${error.message}`, 'error', true, mainEntryId);
+            // Re-enable buttons on error
+            setProcessing(false);
         });
     }
 
@@ -204,6 +224,12 @@ document.addEventListener('DOMContentLoaded', function() {
                     console.error('Error getting default path:', error);
                 });
         }
+
+        serverList = document.createElement('select');
+        serverList.id = 'server-list';
+        serverList.className = 'server-list';
+        serverList.style.display = 'none';
+        embyPathInput.parentNode.insertBefore(serverList, embyPathInput.nextSibling);
     }
 
     // Functions
@@ -222,101 +248,106 @@ document.addEventListener('DOMContentLoaded', function() {
         restoreStatusElement.classList.add('hidden');
     }
 
-    async function selectEmbyPath(path) {
-        try {
-            const response = await fetch('/api/select-emby', {
+    // Function to select Emby path
+    function selectEmbyPath(path) {
+        return new Promise((resolve, reject) => {
+            fetch('/api/select-emby', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ path: path })
-            });
-            
-            const data = await response.json();
-            
-            if (data.success) {
-                updateSelectedPath(data.path);
-                addLogEntry(`Selected Emby Server path: ${data.path}`);
-                return data;
-            } else {
-                throw new Error(data.message);
-            }
-        } catch (error) {
-            console.error('Error:', error);
-            addLogEntry(`Error selecting path: ${error.message}`, 'error');
-            throw error;
-        }
+                body: JSON.stringify({
+                    path: path.replace(/\\/g, '/') // Normalize path separators
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Update selected path display
+                    document.getElementById('selected-path').textContent = path;
+                    selectedEmbyPath = path;
+                    
+                    // Enable buttons
+                    document.getElementById('check-compatibility').disabled = false;
+                    if (checkBackupButton) checkBackupButton.disabled = false;
+                    
+                    // Automatically trigger compatibility check
+                    checkCompatibility();
+                    
+                    resolve(data);
+                } else {
+                    reject(new Error(data.message));
+                }
+            })
+            .catch(error => reject(error));
+        });
     }
 
     function checkCompatibility() {
-        if (!selectedEmbyPath) {
-            alert('Please select Emby Server path first');
+        const path = embyPathInput.value.trim();
+        if (!path) {
+            alert('Please enter or select an Emby Server path first');
             return;
         }
 
+        setProcessing(true);
         currentStep = 'check-compatibility';
-        setProcessing(true);  // Set processing state at the start
-        resetProgress();
-        updateProgress('check-compatibility', 10, 'active');
-        
-        const mainEntryId = addLogEntry('Checking Emby Server Path...', 'active');
-        
+        updateProgress('check-compatibility', 10);
+        addLogEntry('Checking FFMPEG compatibility...', 'info');
+
+        // Show the results table immediately but with loading state
+        document.getElementById('system-architecture').textContent = 'Checking...';
+        document.getElementById('ffmpeg-architecture').textContent = 'Checking...';
+        document.getElementById('compatibility-status').textContent = 'Checking...';
+        document.getElementById('compatibility-results').classList.remove('hidden');
+
         fetch('/api/check-compatibility', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ path: selectedEmbyPath })
+            body: JSON.stringify({ path: path })
         })
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            updateProgress('check-compatibility', 50);
+            return response.json();
+        })
         .then(data => {
             if (data.success) {
-                updateProgress('check-compatibility', 40);
-                addLogEntry('Path validation successful', 'complete', true, mainEntryId);
+                // Update architecture information
+                document.getElementById('system-architecture').textContent = data.system_architecture || 'Unknown';
+                document.getElementById('ffmpeg-architecture').textContent = data.ffmpeg_architecture || 'Unknown';
+                document.getElementById('compatibility-status').textContent = data.is_compatible ? 'Compatible ✅' : 'Incompatible ❌';
                 
-                // Display system architecture
-                addLogEntry('Detecting System Architecture...', 'active', true, mainEntryId);
-                updateProgress('check-compatibility', 60);
-                systemArchitectureElement.textContent = data.system_architecture;
-                addLogEntry(`System Architecture: ${data.system_architecture}`, 'complete', true, mainEntryId);
-                
-                // Display FFMPEG architecture
-                addLogEntry('Detecting FFMPEG Architecture...', 'active', true, mainEntryId);
-                updateProgress('check-compatibility', 80);
-                ffmpegArchitectureElement.textContent = data.ffmpeg_architecture;
-                addLogEntry(`FFMPEG Architecture: ${data.ffmpeg_architecture}`, 'complete', true, mainEntryId);
-                
-                // Check compatibility and display status
-                isCompatible = data.is_compatible;
+                // Update progress and log
                 updateProgress('check-compatibility', 100, 'complete');
+                addLogEntry(`System Architecture: ${data.system_architecture}`, 'info', true);
+                addLogEntry(`FFMPEG Architecture: ${data.ffmpeg_architecture}`, 'info', true);
+                addLogEntry(`Compatibility Status: ${data.is_compatible ? 'Compatible' : 'Incompatible'}`, data.is_compatible ? 'success' : 'error', true);
                 
-                if (isCompatible) {
-                    compatibilityStatusElement.textContent = 'Compatible ✓';
-                    compatibilityStatusElement.style.color = '#28a745';
-                    fixSection.classList.add('hidden');
-                    addLogEntry('Compatibility check complete - System is compatible', 'complete', true, mainEntryId);
-                } else {
-                    compatibilityStatusElement.textContent = 'Incompatible ✗';
-                    compatibilityStatusElement.style.color = '#dc3545';
-                    fixSection.classList.remove('hidden');
-                    addLogEntry('⚠️ FFMPEG binaries are incompatible with your system architecture', 'error', true, mainEntryId);
+                // Show fix section if incompatible
+                if (!data.is_compatible) {
+                    document.getElementById('fix-section').classList.remove('hidden');
+                    fixButton.disabled = false;
                 }
-                
-                compatibilityResults.classList.remove('hidden');
             } else {
-                updateProgress('check-compatibility', 100, 'error');
-                alert(data.message);
-                addLogEntry(`Error checking compatibility: ${data.message}`, 'error', true, mainEntryId);
+                throw new Error(data.message || 'Failed to check compatibility');
             }
         })
         .catch(error => {
             console.error('Error:', error);
+            // Update status elements to show error
+            document.getElementById('system-architecture').textContent = 'Error';
+            document.getElementById('ffmpeg-architecture').textContent = 'Error';
+            document.getElementById('compatibility-status').textContent = 'Check Failed ❌';
             updateProgress('check-compatibility', 100, 'error');
-            alert('An error occurred while checking compatibility');
-            addLogEntry(`Error: ${error.message}`, 'error', true, mainEntryId);
+            addLogEntry(`Error checking compatibility: ${error.message}`, 'error');
         })
         .finally(() => {
-            setProcessing(false);  // Only set processing to false when the operation is complete
+            setProcessing(false);
         });
     }
 
@@ -717,43 +748,63 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Event listeners
-    if (browseButton) {
-        browseButton.addEventListener('click', function() {
-            fetch('/api/browse-emby', {
-                method: 'GET'
-            })
+    browseButton.addEventListener('click', function() {
+        // First try to get list of servers
+        fetch('/api/list-emby-servers')
             .then(response => response.json())
             .then(data => {
-                if (data.success && data.path) {
-                    embyPathInput.value = data.path;
-                    updateSelectedPath(data.path);
-                    addLogEntry(`Selected Emby Server path: ${data.path}`, 'complete');
-                } else if (data.message) {
-                    addLogEntry(`Failed to select path: ${data.message}`, 'error');
+                if (data.success && data.servers && data.servers.length > 0) {
+                    // Clear and populate server list
+                    serverList.innerHTML = '';
+                    serverList.appendChild(new Option('Select Emby Server...', ''));
+                    data.servers.forEach(server => {
+                        serverList.appendChild(new Option(server, server));
+                    });
+                    
+                    // Show server list
+                    serverList.style.display = 'block';
+                    serverList.focus();
+                } else {
+                    // If no servers found, fall back to file dialog
+                    fetch('/api/browse-emby')
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success && data.path) {
+                                embyPathInput.value = data.path;
+                            } else {
+                                console.error('Error selecting path:', data.message);
+                            }
+                        })
+                        .catch(error => console.error('Error browsing:', error));
                 }
             })
-            .catch(error => {
-                console.error('Error:', error);
-                addLogEntry(`Error selecting path: ${error.message}`, 'error');
-            });
-        });
-    }
+            .catch(error => console.error('Error listing servers:', error));
+    });
+
+    // Handle server selection
+    serverList.addEventListener('change', function() {
+        if (this.value) {
+            embyPathInput.value = this.value;
+            this.style.display = 'none';
+        }
+    });
 
     usePathButton.addEventListener('click', function() {
         const path = embyPathInput.value.trim();
-        if (path) {
-            selectEmbyPath(path)
-                .then(() => {
-                    addLogEntry('Successfully validated entered path', 'complete');
-                    // Automatically check compatibility after path is validated
-                    checkCompatibility();
-                })
-                .catch(error => {
-                    alert(error.message);
-                });
-        } else {
+        if (!path) {
             alert('Please enter a valid path');
+            return;
         }
+
+        addLogEntry('Validating Emby Server path...', 'info');
+        selectEmbyPath(path)
+            .then(() => {
+                addLogEntry('Successfully validated path', 'success');
+            })
+            .catch(error => {
+                addLogEntry(`Error: ${error.message}`, 'error');
+                alert(error.message);
+            });
     });
 
     checkCompatibilityButton.addEventListener('click', checkCompatibility);

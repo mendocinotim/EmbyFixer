@@ -9,6 +9,7 @@ import shutil
 import logging
 import subprocess
 from datetime import datetime
+import glob
 
 def setup_logging():
     """Configure logging for the application"""
@@ -52,24 +53,14 @@ def get_system_architecture():
 
 def get_default_emby_path():
     """Get the default Emby Server installation path."""
-    default_paths = [
-        "/Applications/EmbyServer.app",  # macOS
-        "/Applications/Emby Server.app",  # macOS alternative
-        "C:\\Program Files\\Emby Server",  # Windows
-        "/opt/emby-server"  # Linux
-    ]
-    
-    # On macOS, prioritize EmbyServer.app
-    if platform.system() == 'Darwin':
-        mac_paths = [p for p in default_paths if p.endswith('.app')]
-        for path in mac_paths:
+    if platform.system() == 'Darwin':  # macOS
+        default_paths = [
+            "/Applications/EmbyServer.app",
+            "/Applications/Emby Server.app"
+        ]
+        for path in default_paths:
             if os.path.exists(path):
                 return path
-    
-    # For other systems or if no macOS path found
-    for path in default_paths:
-        if os.path.exists(path):
-            return path
     return None
 
 def get_resource_path(relative_path):
@@ -83,27 +74,40 @@ def get_resource_path(relative_path):
     return os.path.join(base_path, relative_path)
 
 def find_ffmpeg_binaries(emby_path):
-    """Find FFMPEG binaries in Emby Server installation."""
+    """Find FFMPEG binaries in the Emby Server application"""
     try:
-        # macOS paths
-        if platform.system() == 'Darwin':
-            ffmpeg_path = os.path.join(emby_path, 'Contents', 'Resources', 'ffmpeg')
-            if os.path.exists(ffmpeg_path):
-                return ffmpeg_path
-        # Windows paths
-        elif platform.system() == 'Windows':
-            ffmpeg_path = os.path.join(emby_path, 'ffmpeg')
-            if os.path.exists(ffmpeg_path):
-                return ffmpeg_path
-        # Linux paths
-        else:
-            ffmpeg_path = os.path.join(emby_path, 'ffmpeg')
-            if os.path.exists(ffmpeg_path):
-                return ffmpeg_path
-        
+        if not emby_path:
+            return None
+            
+        # For macOS, check in the app bundle
+        if emby_path.endswith('.app'):
+            possible_paths = [
+                os.path.join(emby_path, 'Contents', 'MacOS', 'ffmpeg'),  # Check in MacOS directory
+                os.path.join(emby_path, 'Contents', 'Resources', 'ffmpeg'),  # Check in Resources
+                os.path.join(emby_path, 'Contents', 'Frameworks', 'ffmpeg')  # Check in Frameworks
+            ]
+            
+            # Log the paths we're checking
+            logging.info(f"Checking for FFMPEG in the following locations:")
+            for path in possible_paths:
+                logging.info(f"- {path}")
+                if os.path.exists(path):
+                    logging.info(f"Found FFMPEG at: {path}")
+                    return path
+                    
+            # If not found in standard locations, search the entire app bundle
+            for root, dirs, files in os.walk(emby_path):
+                if 'ffmpeg' in files:
+                    ffmpeg_path = os.path.join(root, 'ffmpeg')
+                    logging.info(f"Found FFMPEG at: {ffmpeg_path}")
+                    return ffmpeg_path
+                    
+            logging.error(f"FFMPEG not found in Emby Server application bundle: {emby_path}")
+            return None
+            
         return None
     except Exception as e:
-        logging.error(f"Error finding FFMPEG binaries: {e}")
+        logging.error(f"Error finding FFMPEG binaries: {str(e)}")
         return None
 
 def get_ffmpeg_architecture(ffmpeg_path):
@@ -221,4 +225,24 @@ def restore_initial_state(emby_path):
         shutil.copytree(backup_dir, emby_path)
         return {"success": True}
     except Exception as e:
-        return {"success": False, "message": str(e)} 
+        return {"success": False, "message": str(e)}
+
+def find_emby_servers():
+    """Scan the Applications directory for Emby Server installations."""
+    if platform.system() != 'Darwin':
+        return []
+    
+    # Search patterns for Emby Server
+    patterns = [
+        "/Applications/*[Ee]mby*[Ss]erver*.app",
+        "/Applications/Emby*.app"
+    ]
+    
+    found_servers = set()
+    for pattern in patterns:
+        matches = glob.glob(pattern)
+        for match in matches:
+            if os.path.isdir(match):
+                found_servers.add(match)
+    
+    return sorted(list(found_servers)) 

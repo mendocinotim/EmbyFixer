@@ -516,3 +516,24 @@ footer {
 .pulse-animation {
     animation: pulse-red 2s infinite;
 }
+
+.server-list {
+    width: 100%;
+    max-width: 400px;
+    padding: 8px;
+    margin: 8px 0;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: white;
+    font-size: 14px;
+    display: none;
+}
+
+.server-list option {
+    padding: 8px;
+    cursor: pointer;
+}
+
+.server-list option:hover {
+    background-color: #f0f0f0;
+}

@@ -24,39 +24,61 @@ from core.utils import (
     create_backup,
     restore_from_backup,
     force_architecture_incompatibility,
-    get_default_emby_path
+    get_default_emby_path,
+    find_emby_servers
 )
+import socket
+
+def find_available_port(start_port=9876, max_port=9886):
+    """Find an available port in the given range."""
+    for port in range(start_port, max_port + 1):
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+            try:
+                s.bind(('', port))
+                s.close()
+                logging.info(f"Successfully found available port: {port}")
+                return port
+            except OSError as e:
+                logging.error(f"Port {port} is not available: {e}")
+                continue
+    logging.error("No available ports found in range")
+    return None
 
 # Global Configuration
-APP_PORT = 5004  # Application port number
+APP_HOST = '0.0.0.0'  # Listen on all interfaces
+APP_PORT = 5050  # Use port 5050
 
 app = Flask(__name__)
 CORS(app)  # Enable CORS for all routes
 app.config['EMBY_PATH'] = None  # Initialize EMBY_PATH config
-app.config['DEBUG'] = False  # Disable debug mode
+app.config['DEBUG'] = True  # Enable debug mode for development
 app.config['PROPAGATE_EXCEPTIONS'] = True  # Enable exception propagation
 
-# Configure logging
-setup_logging()
+# Ensure logs directory exists
+if not os.path.exists('logs'):
+    os.makedirs('logs')
+
+# Configure logging with more detail
+logging.basicConfig(
+    level=logging.DEBUG,
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.StreamHandler(sys.stdout),
+        logging.FileHandler('logs/emby_ffmpeg_fixer.log')
+    ]
+)
 
 def kill_existing_flask():
-    """Kill any existing Flask processes running on port APP_PORT"""
+    """Kill any existing Flask processes"""
     try:
-        for proc in psutil.process_iter(['pid', 'name', 'cmdline']):
-            try:
-                cmdline = proc.info.get('cmdline', [])
-                if cmdline and 'python' in cmdline[0] and 'app.py' in ' '.join(cmdline):
-                    if proc.pid != os.getpid():  # Don't kill ourselves
-                        proc.kill()
-                        logging.info(f"Killed existing Flask process: {proc.pid}")
-            except (psutil.NoSuchProcess, psutil.AccessDenied):
-                continue
+        # More aggressive process killing
+        os.system('pkill -9 -f "python.*app.py"')
+        time.sleep(1)
     except Exception as e:
-        logging.error(f"Error killing existing Flask processes: {e}")
+        logging.error(f"Error killing existing processes: {e}")
 
 def is_port_in_use(port):
     """Check if a port is in use"""
-    import socket
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         return s.connect_ex(('127.0.0.1', port)) == 0
 
@@ -70,17 +92,8 @@ def index():
 @app.route('/main')
 def main():
     """Main application page"""
-    if not state_manager.is_main_app_running():
-        return redirect(url_for('index'))
-    
     # Get default Emby Server path
     default_path = get_default_emby_path()
-    
-    # Create initial state backup if path exists
-    if default_path:
-        result = state_manager.create_initial_state_backup(default_path)
-        if not result["success"]:
-            logging.error(f"Failed to create initial state backup: {result['message']}")
     
     # Get current process state
     process_state = process_manager.get_state()
@@ -121,34 +134,40 @@ def start_application():
 @app.route('/api/select-emby', methods=['POST'])
 def select_emby():
     try:
-        emby_path = request.json.get('path')
-        
-        if not emby_path or not os.path.exists(emby_path):
+        data = request.get_json()
+        if not data:
             return jsonify({
                 'success': False,
-                'message': 'Invalid Emby Server path'
-            })
+                'message': 'No data provided'
+            }), 400
             
-        # Check if we have read access to the path
-        if not os.access(emby_path, os.R_OK):
+        emby_path = data.get('path')
+        if not emby_path:
             return jsonify({
                 'success': False,
-                'message': f'No read permission for path: {emby_path}'
-            })
+                'message': 'No path provided'
+            }), 400
+            
+        if not os.path.exists(emby_path):
+            return jsonify({
+                'success': False,
+                'message': f'Path does not exist: {emby_path}'
+            }), 404
         
-        # Save the selected path for later use
+        # Save the selected path
         app.config['EMBY_PATH'] = emby_path
         
         return jsonify({
             'success': True,
+            'message': 'Path selected successfully',
             'path': emby_path
         })
+        
     except Exception as e:
-        error_msg = f"Error selecting Emby path: {str(e)}"
-        logging.error(error_msg)
+        logging.error(f"Error in select_emby: {str(e)}")
         return jsonify({
             'success': False,
-            'message': error_msg
+            'message': f'Server error: {str(e)}'
         }), 500
 
 @app.route('/api/check-compatibility', methods=['POST'])
@@ -471,35 +490,39 @@ def stop_process():
                 "message": "No Emby Server path provided"
             })
         
+        logging.info("Attempting to stop process and restore state...")
+        
         # First stop any running process
-        if process_manager.stop_process():
-            # Then restore to initial state
-            restore_result = state_manager.restore_initial_state(emby_path)
-            if not restore_result["success"]:
-                logging.error(f"Failed to restore initial state: {restore_result['message']}")
-                return jsonify({
-                    "success": False,
-                    "message": f"Process stopped but failed to restore initial state: {restore_result['message']}"
-                })
-            
-            # Reset application state
-            state_manager.set_main_app_running(False)
-            logging.info("Process stopped and initial state restored")
-            
-            # Return success response with redirect
-            return jsonify({
-                "success": True,
-                "message": "Process stopped and initial state restored successfully",
-                "redirect": url_for('index')
-            })
-        else:
+        process_stopped = process_manager.stop_process()
+        logging.info(f"Process stop result: {process_stopped}")
+        
+        # Then restore to initial state
+        restore_result = state_manager.restore_initial_state(emby_path)
+        logging.info(f"State restore result: {restore_result}")
+        
+        if not restore_result["success"]:
+            logging.error(f"Failed to restore initial state: {restore_result['message']}")
             return jsonify({
                 "success": False,
-                "message": "No active process to stop"
+                "message": f"Process stopped but failed to restore initial state: {restore_result['message']}"
             })
+        
+        # Reset application state
+        state_manager.set_main_app_running(False)
+        logging.info("Process stopped and initial state restored")
+        
+        # Kill any remaining Python processes
+        kill_existing_flask()
+        
+        # Return success response with redirect
+        return jsonify({
+            "success": True,
+            "message": "Process stopped and initial state restored successfully",
+            "redirect": url_for('index')
+        })
     except Exception as e:
         error_msg = f"Error stopping process: {str(e)}"
-        logging.error(error_msg)
+        logging.error(error_msg, exc_info=True)
         return jsonify({
             "success": False,
             "message": error_msg
@@ -590,6 +613,21 @@ def browse_emby():
             'message': error_msg
         }), 500
 
+@app.route('/api/list-emby-servers')
+def list_emby_servers():
+    """Get a list of all detected Emby Server installations."""
+    try:
+        servers = find_emby_servers()
+        return jsonify({
+            "success": True,
+            "servers": servers
+        })
+    except Exception as e:
+        return jsonify({
+            "success": False,
+            "message": str(e)
+        }), 500
+
 def run_process(cmd, shell=False):
     global CURRENT_PROCESS
     try:
@@ -603,31 +641,58 @@ def run_process(cmd, shell=False):
 
 def main():
     """Main entry point for the application"""
-    max_retries = 5
-    retries = 0
-    
-    # Wait for port to become available
-    while is_port_in_use(APP_PORT) and retries < max_retries:
-        logging.info(f"Waiting for port {APP_PORT} to be available...")
-        time.sleep(1)
-        retries += 1
-    
-    if is_port_in_use(APP_PORT):
-        print(f"Error: Port {APP_PORT} is still in use. Please ensure no other applications are using this port.")
-        sys.exit(1)
-    
-    # Start the application
     try:
-        print(f"Access the application at: http://127.0.0.1:{APP_PORT}")
-        serve(
-            app,
-            host='127.0.0.1',
-            port=APP_PORT,  # Use the global port number
-            threads=4
+        # Configure logging first
+        if not os.path.exists('logs'):
+            os.makedirs('logs')
+            
+        logging.basicConfig(
+            level=logging.DEBUG,
+            format='%(asctime)s - %(levelname)s - %(message)s',
+            handlers=[
+                logging.StreamHandler(sys.stdout),
+                logging.FileHandler('logs/emby_ffmpeg_fixer.log')
+            ]
         )
+
+        # Kill any existing Flask processes
+        kill_existing_flask()
+        time.sleep(2)  # Give processes more time to die
+        
+        # Check if port is in use
+        if is_port_in_use(APP_PORT):
+            logging.error(f"Port {APP_PORT} is already in use")
+            sys.exit(1)
+            
+        logging.info(f"Starting application on {APP_HOST}:{APP_PORT}")
+        print(f"Starting application on {APP_HOST}:{APP_PORT}")
+        
+        # Use Flask's development server with minimal options
+        app.run(
+            host=APP_HOST,
+            port=APP_PORT,
+            debug=False,
+            use_reloader=False,
+            threaded=False,  # Disable threading to prevent race conditions
+            processes=1  # Single process
+        )
+        
     except Exception as e:
-        print(f"Error starting server: {e}")
+        logging.error(f"Error starting application: {e}", exc_info=True)
+        print(f"Error starting application: {e}")
         sys.exit(1)
 
 if __name__ == '__main__':
-    main()
+    try:
+        # Set up signal handlers
+        signal.signal(signal.SIGINT, lambda s, f: sys.exit(0))
+        signal.signal(signal.SIGTERM, lambda s, f: sys.exit(0))
+        signal.signal(signal.SIGABRT, lambda s, f: sys.exit(0))
+        
+        main()
+    except KeyboardInterrupt:
+        print("\nShutting down gracefully...")
+        sys.exit(0)
+    except Exception as e:
+        logging.error(f"Fatal error: {e}", exc_info=True)
+        sys.exit(1)

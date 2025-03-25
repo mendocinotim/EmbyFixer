@@ -44,4 +44,10 @@ MANIFEST
 # Test cache
 .pytest_cache/
 .coverage
-htmlcov/ 
+htmlcov/
+
+# Additional files
+*.dylib
+.env
+.venv
+ENV/ 
