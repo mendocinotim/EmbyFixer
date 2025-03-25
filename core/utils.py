@@ -77,34 +77,49 @@ def find_ffmpeg_binaries(emby_path):
     """Find FFMPEG binaries in the Emby Server application"""
     try:
         if not emby_path:
+            logging.error("No Emby Server path provided")
             return None
             
+        logging.info(f"Searching for FFMPEG in Emby Server at: {emby_path}")
+        
         # For macOS, check in the app bundle
         if emby_path.endswith('.app'):
+            # Define possible locations for FFMPEG
             possible_paths = [
-                os.path.join(emby_path, 'Contents', 'MacOS', 'ffmpeg'),  # Check in MacOS directory
-                os.path.join(emby_path, 'Contents', 'Resources', 'ffmpeg'),  # Check in Resources
-                os.path.join(emby_path, 'Contents', 'Frameworks', 'ffmpeg')  # Check in Frameworks
+                os.path.join(emby_path, 'Contents', 'MacOS', 'ffmpeg'),
+                os.path.join(emby_path, 'Contents', 'Resources', 'ffmpeg'),
+                os.path.join(emby_path, 'Contents', 'Frameworks', 'ffmpeg'),
+                os.path.join(emby_path, 'Contents', 'MacOS', 'Emby Server', 'ffmpeg'),
+                os.path.join(emby_path, 'Contents', 'Resources', 'Emby Server', 'ffmpeg'),
+                os.path.join(emby_path, 'Contents', 'Frameworks', 'Emby Server', 'ffmpeg')
             ]
             
             # Log the paths we're checking
-            logging.info(f"Checking for FFMPEG in the following locations:")
+            logging.info("Checking for FFMPEG in standard locations:")
             for path in possible_paths:
-                logging.info(f"- {path}")
+                logging.info(f"Checking: {path}")
                 if os.path.exists(path):
-                    logging.info(f"Found FFMPEG at: {path}")
-                    return path
-                    
+                    if os.access(path, os.X_OK):
+                        logging.info(f"Found executable FFMPEG at: {path}")
+                        return path
+                    else:
+                        logging.warning(f"Found FFMPEG at {path} but it's not executable")
+                        
             # If not found in standard locations, search the entire app bundle
+            logging.info("FFMPEG not found in standard locations, searching entire app bundle...")
             for root, dirs, files in os.walk(emby_path):
                 if 'ffmpeg' in files:
                     ffmpeg_path = os.path.join(root, 'ffmpeg')
-                    logging.info(f"Found FFMPEG at: {ffmpeg_path}")
-                    return ffmpeg_path
-                    
+                    if os.access(ffmpeg_path, os.X_OK):
+                        logging.info(f"Found executable FFMPEG at: {ffmpeg_path}")
+                        return ffmpeg_path
+                    else:
+                        logging.warning(f"Found FFMPEG at {ffmpeg_path} but it's not executable")
+                        
             logging.error(f"FFMPEG not found in Emby Server application bundle: {emby_path}")
             return None
             
+        logging.error("Unsupported Emby Server path format")
         return None
     except Exception as e:
         logging.error(f"Error finding FFMPEG binaries: {str(e)}")
@@ -113,11 +128,49 @@ def find_ffmpeg_binaries(emby_path):
 def get_ffmpeg_architecture(ffmpeg_path):
     """Get the architecture of FFMPEG binary."""
     try:
-        result = subprocess.run([ffmpeg_path, '-version'], capture_output=True, text=True)
-        if 'arm64' in result.stdout.lower():
-            return 'arm64'
-        elif 'x86_64' in result.stdout.lower():
-            return 'x86_64'
+        if not os.path.exists(ffmpeg_path):
+            logging.error(f"FFMPEG binary not found at: {ffmpeg_path}")
+            return None
+
+        if platform.system() == 'Darwin':  # macOS
+            # Use file command to check architecture
+            result = subprocess.run(['file', ffmpeg_path], capture_output=True, text=True)
+            output = result.stdout.lower()
+            
+            logging.info(f"File command output: {output}")
+            
+            if 'arm64' in output:
+                return 'arm64'
+            elif 'x86_64' in output:
+                return 'x86_64'
+            
+            # If architecture not found in file output, try lipo
+            try:
+                result = subprocess.run(['lipo', '-info', ffmpeg_path], capture_output=True, text=True)
+                output = result.stdout.lower()
+                logging.info(f"Lipo command output: {output}")
+                
+                if 'arm64' in output:
+                    return 'arm64'
+                elif 'x86_64' in output:
+                    return 'x86_64'
+            except Exception as e:
+                logging.error(f"Error running lipo command: {e}")
+        
+        # Fallback to running ffmpeg -version
+        try:
+            result = subprocess.run([ffmpeg_path, '-version'], capture_output=True, text=True)
+            output = result.stdout.lower()
+            logging.info(f"FFMPEG version output: {output}")
+            
+            if 'arm64' in output:
+                return 'arm64'
+            elif 'x86_64' in output:
+                return 'x86_64'
+        except Exception as e:
+            logging.error(f"Error running ffmpeg -version: {e}")
+        
+        logging.error("Could not determine FFMPEG architecture using any method")
         return None
     except Exception as e:
         logging.error(f"Error getting FFMPEG architecture: {e}")

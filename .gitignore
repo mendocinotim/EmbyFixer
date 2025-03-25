@@ -1,31 +1,42 @@
-# Python virtual environment
-EmbyFixer/
-venv/
-env/
-
-# Python cache files
+# Python
 __pycache__/
 *.py[cod]
 *$py.class
 *.so
-.Python
+*.dylib
+
+# Virtual Environment
+.env
+.venv
+env/
+venv/
+ENV/
+EmbyFixer/
+
+# Distribution / packaging
+dist/
+build/
+*.egg-info/
 
 # Logs
 logs/
 *.log
 
-# macOS system files
+# macOS
 .DS_Store
+
+# IDE
+.idea/
+.vscode/
+
+# Python cache files
+.Python
+
+# macOS system files
 .AppleDouble
 .LSOverride
 
-# IDE files
-.vscode/
-.idea/
-
 # Distribution / packaging
-dist/
-build/
 develop-eggs/
 downloads/
 eggs/
@@ -36,9 +47,7 @@ parts/
 sdist/
 var/
 wheels/
-*.egg-info/
 .installed.cfg
-*.egg
 MANIFEST
 
 # Test cache
@@ -47,7 +56,5 @@ MANIFEST
 htmlcov/
 
 # Additional files
-*.dylib
-.env
-.venv
-ENV/ 
+*.egg
+*.log 

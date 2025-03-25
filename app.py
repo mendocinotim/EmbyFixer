@@ -172,41 +172,97 @@ def select_emby():
 
 @app.route('/api/check-compatibility', methods=['POST'])
 def check_compatibility():
-    emby_path = request.json.get('path')
-    
-    if not emby_path or not os.path.exists(emby_path):
+    try:
+        logging.info("Received compatibility check request")
+        emby_path = request.json.get('path')
+        logging.info(f"Checking compatibility for path: {emby_path}")
+        
+        if not emby_path:
+            logging.warning("No Emby Server path provided")
+            return jsonify({
+                'success': False,
+                'message': 'No Emby Server path provided',
+                'system_architecture': get_system_architecture(),
+                'ffmpeg_architecture': None,
+                'compatible': False
+            })
+        
+        if not os.path.exists(emby_path):
+            logging.warning(f"Emby Server path does not exist: {emby_path}")
+            return jsonify({
+                'success': False,
+                'message': f'Emby Server path does not exist: {emby_path}',
+                'system_architecture': get_system_architecture(),
+                'ffmpeg_architecture': None,
+                'compatible': False
+            })
+        
+        # Save the selected path for later use
+        app.config['EMBY_PATH'] = emby_path
+        
+        # Get system architecture
+        system_arch = get_system_architecture()
+        logging.info(f"System architecture: {system_arch}")
+        
+        if not system_arch:
+            logging.error("Could not determine system architecture")
+            return jsonify({
+                'success': False,
+                'message': 'Could not determine system architecture',
+                'system_architecture': None,
+                'ffmpeg_architecture': None,
+                'compatible': False
+            })
+        
+        # Find FFMPEG binaries in Emby Server
+        ffmpeg_path = find_ffmpeg_binaries(emby_path)
+        logging.info(f"FFMPEG path: {ffmpeg_path}")
+        
+        if not ffmpeg_path:
+            logging.warning("FFMPEG binaries not found in Emby Server")
+            return jsonify({
+                'success': False,
+                'message': 'FFMPEG binaries not found in Emby Server',
+                'system_architecture': system_arch,
+                'ffmpeg_architecture': None,
+                'compatible': False
+            })
+        
+        # Get FFMPEG architecture
+        ffmpeg_arch = get_ffmpeg_architecture(ffmpeg_path)
+        logging.info(f"FFMPEG architecture: {ffmpeg_arch}")
+        
+        if not ffmpeg_arch:
+            logging.error("Could not determine FFMPEG architecture")
+            return jsonify({
+                'success': False,
+                'message': 'Could not determine FFMPEG architecture',
+                'system_architecture': system_arch,
+                'ffmpeg_architecture': None,
+                'compatible': False
+            })
+        
+        # Check compatibility
+        compatible = system_arch == ffmpeg_arch
+        logging.info(f"Compatibility check result: {compatible}")
+        
+        return jsonify({
+            'success': True,
+            'message': 'Compatibility check completed',
+            'system_architecture': system_arch,
+            'ffmpeg_architecture': ffmpeg_arch,
+            'compatible': compatible
+        })
+        
+    except Exception as e:
+        logging.error(f"Error in check_compatibility: {str(e)}", exc_info=True)
         return jsonify({
             'success': False,
-            'message': 'Invalid Emby Server path'
-        })
-    
-    # Save the selected path for later use
-    app.config['EMBY_PATH'] = emby_path
-    
-    # Get system architecture
-    system_arch = get_system_architecture()
-    
-    # Find FFMPEG binaries in Emby Server
-    ffmpeg_path = find_ffmpeg_binaries(emby_path)
-    if not ffmpeg_path:
-        return jsonify({
-            'success': False,
-            'message': 'FFMPEG binaries not found in Emby Server',
-            'system_architecture': system_arch
-        })
-    
-    # Get FFMPEG architecture
-    ffmpeg_arch = get_ffmpeg_architecture(ffmpeg_path)
-    
-    # Check compatibility
-    is_compatible = (system_arch == ffmpeg_arch)
-    
-    return jsonify({
-        'success': True,
-        'system_architecture': system_arch,
-        'ffmpeg_architecture': ffmpeg_arch,
-        'is_compatible': is_compatible
-    })
+            'message': f'Server error: {str(e)}',
+            'system_architecture': None,
+            'ffmpeg_architecture': None,
+            'compatible': False
+        }), 500
 
 @app.route('/api/fix-ffmpeg', methods=['POST'])
 def fix_ffmpeg():
